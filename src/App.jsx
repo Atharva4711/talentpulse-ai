@@ -1,18 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
+import PlacementTicker from './components/PlacementTicker';
 import CandidateJobsView from './components/CandidateJobsView';
 import AtsScannerView from './components/AtsScannerView';
 import TechnicalAssessmentView from './components/TechnicalAssessmentView';
 import AiInterviewStudioView from './components/AiInterviewStudioView';
 import CandidateDossierView from './components/CandidateDossierView';
 import TpoDashboardView from './components/TpoDashboardView';
+import UserProfileModal from './components/UserProfileModal';
+import VivaDemoFab from './components/VivaDemoFab';
 import { MNC_JOB_DRIVES, BENCHMARK_RESUMES } from './data/mockData';
-import { Cpu, ShieldCheck, Sparkles, Terminal, Activity } from 'lucide-react';
+import { Cpu, ShieldCheck, Sparkles, Terminal, Activity, Building2, FileText, Code2, Bot, Award } from 'lucide-react';
 
 export default function App() {
   const [activeView, setActiveView] = useState('jobs');
   const [userRole, setUserRole] = useState('student');
   const [activeDrive, setActiveDrive] = useState(MNC_JOB_DRIVES[0]);
+  const [profileOpen, setProfileOpen] = useState(false);
+
+  // Theme Management (Light by default, with rich mesh gradients & dark option)
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('talentpulse_theme');
+    return saved ? saved === 'dark' : false;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+      localStorage.setItem('talentpulse_theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+      localStorage.setItem('talentpulse_theme', 'light');
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => setIsDark(prev => !prev);
 
   // Candidate pipeline state
   const [candidateState, setCandidateState] = useState({
@@ -48,102 +70,210 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-800 flex flex-col font-sans selection:bg-indigo-500/20 selection:text-indigo-800">
+    <div className={`min-h-screen flex flex-col font-sans transition-colors duration-300 relative selection:bg-indigo-500/20 selection:text-indigo-600 ${
+      isDark ? 'ambient-bg-dark text-slate-100' : 'ambient-bg-light text-slate-800'
+    }`}>
       
-      {/* Top Global Navigation with Dual Persona Switcher */}
-      <Navbar
-        activeView={activeView}
-        setActiveView={setActiveView}
-        userRole={userRole}
-        setUserRole={setUserRole}
-        activeDrive={activeDrive}
-        candidateState={candidateState}
-      />
+      {/* Dynamic Animated Ambient Background Orbs (Zero plain white!) */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className={`absolute -top-40 -left-40 w-96 h-96 rounded-full blur-3xl opacity-40 animate-orb-1 transition-colors ${
+          isDark ? 'bg-indigo-600/30' : 'bg-indigo-400/25'
+        }`} />
+        <div className={`absolute top-1/3 -right-40 w-96 h-96 rounded-full blur-3xl opacity-35 animate-orb-2 transition-colors ${
+          isDark ? 'bg-violet-600/25' : 'bg-purple-300/30'
+        }`} />
+        <div className={`absolute -bottom-40 left-1/3 w-96 h-96 rounded-full blur-3xl opacity-30 animate-orb-1 transition-colors ${
+          isDark ? 'bg-emerald-600/20' : 'bg-sky-300/25'
+        }`} />
+      </div>
 
-      {/* Main View Router */}
-      <main className="flex-1 pb-16">
-        {userRole === 'tpo' || activeView.startsWith('tpo') ? (
-          <TpoDashboardView
-            onSelectCandidate={() => setActiveView('dossier')}
-            onSwitchToStudent={() => {
-              setUserRole('student');
-              setActiveView('jobs');
-            }}
-          />
-        ) : activeView === 'jobs' ? (
-          <CandidateJobsView
-            activeDrive={activeDrive}
-            setActiveDrive={setActiveDrive}
-            onApplyDrive={handleApplyDrive}
-          />
-        ) : activeView === 'ats' ? (
-          <AtsScannerView
-            activeDrive={activeDrive}
-            setActiveDrive={setActiveDrive}
-            candidateState={candidateState}
-            setCandidateState={setCandidateState}
-            onProceedToTechnical={handleProceedToTechnical}
-            onBackToJobs={() => setActiveView('jobs')}
-          />
-        ) : activeView === 'technical' ? (
-          <TechnicalAssessmentView
-            activeDrive={activeDrive}
-            candidateState={candidateState}
-            setCandidateState={setCandidateState}
-            onProceedToInterview={handleProceedToInterview}
-            onBackToAts={() => setActiveView('ats')}
-          />
-        ) : activeView === 'interview' ? (
-          <AiInterviewStudioView
-            activeDrive={activeDrive}
-            candidateState={candidateState}
-            setCandidateState={setCandidateState}
-            onProceedToDossier={handleProceedToDossier}
-            onBackToTechnical={() => setActiveView('technical')}
-          />
-        ) : (
-          <CandidateDossierView
-            candidateState={candidateState}
-            activeDrive={activeDrive}
-            onResetWorkflow={handleResetWorkflow}
-            onSwitchToTpo={() => {
-              setUserRole('tpo');
-              setActiveView('tpo-dashboard');
-            }}
-          />
-        )}
-      </main>
+      <div className="relative z-10 flex flex-col min-h-screen">
+        
+        {/* Dynamic Campus Placement Ticker Bar */}
+        <PlacementTicker isDark={isDark} />
 
-      {/* Capstone System Status Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 px-4 sm:px-6 lg:px-8 text-xs text-slate-500">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-5 h-5 rounded-md bg-indigo-600 flex items-center justify-center text-white">
-              <Activity className="w-3.5 h-3.5" />
+        {/* Global Navigation Header with Dual Personas & Profile */}
+        <Navbar
+          activeView={activeView}
+          setActiveView={setActiveView}
+          userRole={userRole}
+          setUserRole={setUserRole}
+          activeDrive={activeDrive}
+          candidateState={candidateState}
+          isDark={isDark}
+          toggleTheme={toggleTheme}
+          onOpenProfile={() => setProfileOpen(true)}
+        />
+
+        {/* Main View Router */}
+        <main className="flex-1 pb-20">
+          {userRole === 'tpo' || activeView.startsWith('tpo') ? (
+            <TpoDashboardView
+              isDark={isDark}
+              onSelectCandidate={() => setActiveView('dossier')}
+              onSwitchToStudent={() => {
+                setUserRole('student');
+                setActiveView('jobs');
+              }}
+            />
+          ) : activeView === 'jobs' ? (
+            <CandidateJobsView
+              isDark={isDark}
+              activeDrive={activeDrive}
+              setActiveDrive={setActiveDrive}
+              onApplyDrive={handleApplyDrive}
+            />
+          ) : activeView === 'ats' ? (
+            <AtsScannerView
+              isDark={isDark}
+              activeDrive={activeDrive}
+              setActiveDrive={setActiveDrive}
+              candidateState={candidateState}
+              setCandidateState={setCandidateState}
+              onProceedToTechnical={handleProceedToTechnical}
+              onBackToJobs={() => setActiveView('jobs')}
+            />
+          ) : activeView === 'technical' ? (
+            <TechnicalAssessmentView
+              isDark={isDark}
+              activeDrive={activeDrive}
+              candidateState={candidateState}
+              setCandidateState={setCandidateState}
+              onProceedToInterview={handleProceedToInterview}
+              onBackToAts={() => setActiveView('ats')}
+            />
+          ) : activeView === 'interview' ? (
+            <AiInterviewStudioView
+              isDark={isDark}
+              activeDrive={activeDrive}
+              candidateState={candidateState}
+              setCandidateState={setCandidateState}
+              onProceedToDossier={handleProceedToDossier}
+              onBackToTechnical={() => setActiveView('technical')}
+            />
+          ) : (
+            <CandidateDossierView
+              isDark={isDark}
+              candidateState={candidateState}
+              activeDrive={activeDrive}
+              onResetWorkflow={handleResetWorkflow}
+              onSwitchToTpo={() => {
+                setUserRole('tpo');
+                setActiveView('tpo-dashboard');
+              }}
+            />
+          )}
+        </main>
+
+        {/* User Profile Modal */}
+        <UserProfileModal
+          isOpen={profileOpen}
+          onClose={() => setProfileOpen(false)}
+          isDark={isDark}
+          candidateState={candidateState}
+          userRole={userRole}
+          setUserRole={setUserRole}
+        />
+
+        {/* Examiner Viva Voce Demonstration Floating Controller */}
+        <VivaDemoFab
+          isDark={isDark}
+          candidateState={candidateState}
+          setCandidateState={setCandidateState}
+          setActiveView={setActiveView}
+        />
+
+        {/* Capstone System Status Footer */}
+        <footer className={`border-t py-6 px-4 sm:px-6 lg:px-8 text-xs transition-colors ${
+          isDark 
+            ? 'bg-slate-950/80 border-slate-800 text-slate-400' 
+            : 'bg-white/80 border-slate-200 text-slate-500 backdrop-blur-md'
+        }`}>
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-5 h-5 rounded-md bg-gradient-to-tr from-indigo-600 to-purple-600 flex items-center justify-center text-white">
+                <Activity className="w-3.5 h-3.5" />
+              </div>
+              <span className="font-bold tracking-tight text-slate-900 dark:text-white">TalentPulse AI</span>
+              <span className="text-slate-300 dark:text-slate-700">|</span>
+              <span>Final Year Diploma in IT Capstone</span>
+              <span className="text-slate-300 dark:text-slate-700">|</span>
+              <span className="text-emerald-600 dark:text-emerald-400 flex items-center gap-1 font-semibold">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Dual-Mode Engine Active
+              </span>
             </div>
-            <span className="font-bold text-slate-900 tracking-tight">TalentPulse AI</span>
-            <span className="text-slate-300">|</span>
-            <span>Final Year College Capstone Project</span>
-            <span className="text-slate-300">|</span>
-            <span className="text-emerald-700 flex items-center gap-1 font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Dual-Mode Engine Active
-            </span>
-          </div>
 
-          <div className="flex items-center gap-4 text-[11px] text-slate-500 font-medium">
-            <span className="flex items-center gap-1">
-              <Cpu className="w-3.5 h-3.5 text-indigo-600" /> OmniRoute Gateway
-            </span>
-            <span className="flex items-center gap-1">
-              <Terminal className="w-3.5 h-3.5 text-violet-600" /> Ruflo Swarm v1.0
-            </span>
-            <span className="flex items-center gap-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Proctoring Engine
-            </span>
+            <div className="flex items-center gap-4 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+              <span className="flex items-center gap-1">
+                <Cpu className="w-3.5 h-3.5 text-indigo-500" /> OmniRoute Gateway
+              </span>
+              <span className="flex items-center gap-1">
+                <Terminal className="w-3.5 h-3.5 text-purple-500" /> Ruflo Swarm v1.0
+              </span>
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Proctoring Engine
+              </span>
+            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
 
+        {/* Mobile Bottom Navigation Bar */}
+        {userRole === 'student' && (
+          <nav className={`md:hidden fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur-xl px-2 py-1.5 flex items-center justify-around text-[10px] font-semibold transition-colors ${
+            isDark ? 'bg-slate-950/90 border-slate-800 text-slate-400' : 'bg-white/90 border-slate-200 text-slate-600'
+          }`}>
+            <button
+              onClick={() => setActiveView('jobs')}
+              className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg ${
+                activeView === 'jobs' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''
+              }`}
+            >
+              <Building2 className="w-4 h-4" />
+              <span>Drives</span>
+            </button>
+            <button
+              onClick={() => setActiveView('ats')}
+              className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg ${
+                activeView === 'ats' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''
+              }`}
+            >
+              <FileText className="w-4 h-4" />
+              <span>ATS</span>
+            </button>
+            <button
+              onClick={() => setActiveView('technical')}
+              disabled={!candidateState.atsResult?.passedCutoff}
+              className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg ${
+                activeView === 'technical' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''
+              } ${!candidateState.atsResult?.passedCutoff ? 'opacity-40' : ''}`}
+            >
+              <Code2 className="w-4 h-4" />
+              <span>Tech</span>
+            </button>
+            <button
+              onClick={() => setActiveView('interview')}
+              disabled={!candidateState.techResult?.passed}
+              className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg ${
+                activeView === 'interview' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''
+              } ${!candidateState.techResult?.passed ? 'opacity-40' : ''}`}
+            >
+              <Bot className="w-4 h-4" />
+              <span>Interview</span>
+            </button>
+            <button
+              onClick={() => setActiveView('dossier')}
+              disabled={!candidateState.interviewResult?.completed}
+              className={`flex flex-col items-center gap-1 py-1 px-2 rounded-lg ${
+                activeView === 'dossier' ? 'text-indigo-600 dark:text-indigo-400 font-bold' : ''
+              } ${!candidateState.interviewResult?.completed ? 'opacity-40' : ''}`}
+            >
+              <Award className="w-4 h-4" />
+              <span>Dossier</span>
+            </button>
+          </nav>
+        )}
+
+      </div>
     </div>
   );
 }

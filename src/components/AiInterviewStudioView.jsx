@@ -21,6 +21,7 @@ import { visionAnalyzer } from '../utils/visionAnalyzer';
 import { aiGateway } from '../utils/aiGateway';
 
 export default function AiInterviewStudioView({ 
+  isDark,
   activeDrive, 
   candidateState, 
   setCandidateState, 
@@ -190,201 +191,147 @@ export default function AiInterviewStudioView({
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8 animate-in fade-in duration-300">
       
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
           <button
             onClick={onBackToTechnical}
-            className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 mb-2 transition-colors cursor-pointer"
+            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center gap-1 mb-2 transition-colors cursor-pointer"
           >
-            <ChevronLeft className="w-3.5 h-3.5" /> Back to Technical Round
+            <ChevronLeft className="w-3.5 h-3.5" /> Back to Technical Assessment
           </button>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Live AI HR Interview Studio
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+            Multimodal AI HR Interview Studio
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Multimodal evaluation for <strong className="text-slate-800">{activeDrive.company}</strong> ({activeDrive.role})
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Real-time Computer Vision Gaze HUD & Acoustic Telemetry for <strong className="text-slate-900 dark:text-white">{activeDrive.company}</strong>
           </p>
         </div>
 
-        {/* AI Co-Worker Model Selector */}
-        <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-slate-200 shadow-2xs text-xs">
-          <Cpu className="w-4 h-4 text-indigo-600" />
-          <span className="text-slate-500 font-semibold">Engine:</span>
-          <select
-            value={activeModel}
-            onChange={(e) => setActiveModel(e.target.value)}
-            className="bg-transparent text-slate-800 font-semibold outline-none cursor-pointer"
-          >
-            <option value="Claude 3.5 Sonnet + Gemini Flash">Claude 3.5 Sonnet + Gemini Flash</option>
-            <option value="OpenAI GPT-4o Enterprise">OpenAI GPT-4o Enterprise</option>
-            <option value="OmniRoute Local Viva Engine">Zero-Failure Offline Engine</option>
-          </select>
+        {/* Status Pill */}
+        <div className="flex items-center gap-3">
+          <span className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Telemetry: 60 FPS Active</span>
+          </span>
         </div>
       </div>
 
-      {/* Main Studio Dual Column Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* Main Studio Frame */}
+      <div className={`p-6 sm:p-8 rounded-3xl border transition-all ${
+        isDark ? 'glass-panel-dark' : 'glass-panel-light'
+      } space-y-8`}>
         
-        {/* Left Column: AI HR Persona & Animated Avatar */}
-        <div className="lg:col-span-5 space-y-6">
-          <div className="p-7 rounded-3xl light-card border border-slate-200 space-y-6 flex flex-col justify-between min-h-[540px]">
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-600 flex items-center justify-center shadow-xs text-white">
-                    <Bot className="w-6 h-6" />
-                    {isAiSpeaking && (
-                      <span className="absolute -top-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full border-2 border-white animate-ping" />
-                    )}
+        {/* Dual Stream Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          
+          {/* AI Interviewer Persona: Sarah Jenkins */}
+          <div className="space-y-4">
+            <div className={`p-6 rounded-3xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all ${
+              isDark ? 'bg-slate-900/90 border-slate-700/80' : 'bg-slate-900 text-white border-slate-800'
+            }`}>
+              <div className="relative mb-4">
+                <div className={`w-24 h-24 rounded-full p-1 transition-all ${
+                  isAiSpeaking 
+                    ? 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-spin-slow' 
+                    : 'bg-slate-700'
+                }`}>
+                  <div className="w-full h-full rounded-full bg-slate-800 flex items-center justify-center text-white overflow-hidden">
+                    <Bot className="w-12 h-12 text-indigo-400" />
                   </div>
-                  <div>
-                    <h2 className="text-base font-bold text-slate-900">Sarah Jenkins</h2>
-                    <p className="text-xs text-indigo-600 font-semibold">Senior Placement Director</p>
-                  </div>
                 </div>
 
-                <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200">
-                  {currentQuestionIdx + 1} / {HR_INTERVIEW_QUESTIONS.length}
-                </span>
+                {isAiSpeaking && (
+                  <span className="absolute -bottom-1 -right-1 px-2 py-0.5 rounded-full bg-indigo-600 text-[10px] font-black uppercase tracking-wider text-white shadow-md animate-pulse">
+                    Speaking
+                  </span>
+                )}
               </div>
 
-              {/* Stage Breadcrumb */}
-              <div className="text-[11px] font-bold text-indigo-600 uppercase tracking-wider mb-2">
-                {currentQ.stage}
+              <h3 className="text-base font-black text-white">Sarah Jenkins</h3>
+              <p className="text-xs text-indigo-300">Lead Campus Talent Partner • {activeDrive.company}</p>
+
+              {/* Dynamic Waveform Visualizer */}
+              <div className="flex items-center gap-1.5 h-8 my-4">
+                {[...Array(12)].map((_, i) => (
+                  <div 
+                    key={i}
+                    className={`w-1 rounded-full transition-all duration-150 ${
+                      isAiSpeaking ? 'bg-indigo-400' : 'bg-slate-700'
+                    }`}
+                    style={{
+                      height: isAiSpeaking ? `${Math.max(6, (Math.sin(i + Date.now() / 150) * 16 + 18))}px` : '6px'
+                    }}
+                  />
+                ))}
               </div>
 
-              {/* Animated Avatar Visualizer & Audio Waveform */}
-              <div className="relative h-40 rounded-2xl bg-slate-900 text-white border border-slate-800 flex flex-col items-center justify-center overflow-hidden p-4 shadow-inner">
-                <div className={`absolute w-32 h-32 rounded-full border border-indigo-400/20 transition-all duration-700 ${isAiSpeaking ? 'scale-125 border-indigo-400/40 animate-pulse' : 'scale-100'}`} />
-                <div className={`absolute w-24 h-24 rounded-full border border-violet-400/30 transition-all duration-500 ${isAiSpeaking ? 'scale-110 border-violet-400/60' : 'scale-90'}`} />
-                
-                <div className="relative z-10 w-14 h-14 rounded-full bg-gradient-to-tr from-indigo-500 to-violet-600 flex items-center justify-center shadow-md border border-white/20">
-                  <Bot className="w-7 h-7 text-white" />
-                </div>
-
-                {/* Live Waveform Equalizer Bars */}
-                <div className="flex items-center gap-1.5 mt-3.5 z-10">
-                  {[12, 24, 38, 18, 42, 28, 16, 34, 20, 30].map((baseHeight, idx) => (
-                    <div
-                      key={idx}
-                      className={`w-1 rounded-full transition-all duration-200 ${
-                        isAiSpeaking 
-                          ? 'bg-gradient-to-t from-indigo-400 to-cyan-300' 
-                          : isCandidateSpeaking 
-                          ? 'bg-gradient-to-t from-emerald-400 to-teal-300' 
-                          : 'bg-slate-700'
-                      }`}
-                      style={{
-                        height: isAiSpeaking 
-                          ? `${Math.max(8, (baseHeight * (idx % 2 === 0 ? 1.2 : 0.8)))}px` 
-                          : isCandidateSpeaking 
-                          ? `${Math.max(6, (baseHeight * 0.7))}px` 
-                          : '6px'
-                      }}
-                    />
-                  ))}
-                </div>
-
-                <div className="text-[11px] text-slate-300 mt-2 font-medium">
-                  {isAiSpeaking ? 'Sarah is speaking...' : isCandidateSpeaking ? 'Listening to candidate...' : 'Awaiting candidate response'}
-                </div>
-              </div>
-
-              {/* Current Spoken Question Box */}
-              <div className="mt-4 p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700">Interview Prompt:</span>
-                  <button
+              {/* Spoken Question Box */}
+              <div className="w-full p-4 rounded-2xl bg-white/5 border border-white/10 text-left">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-indigo-300">
+                    Round {currentQuestionIdx + 1} of 4 • {currentQ.stage.toUpperCase()}
+                  </span>
+                  <button 
                     onClick={speakCurrentQuestion}
-                    className="text-xs text-indigo-600 hover:text-indigo-800 flex items-center gap-1 font-semibold transition-colors cursor-pointer"
-                    title="Repeat question"
+                    className="text-[11px] font-bold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 cursor-pointer"
                   >
                     <Volume2 className="w-3.5 h-3.5" /> Replay Voice
                   </button>
                 </div>
-                <p className="text-xs sm:text-sm font-semibold text-slate-900 leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed">
                   "{currentQ.question}"
                 </p>
               </div>
             </div>
-
-            {/* Answered turns count */}
-            {interviewTurns.length > 0 && (
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-600">
-                <span>Completed Responses:</span>
-                <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  {interviewTurns.length} of {HR_INTERVIEW_QUESTIONS.length} Done
-                </span>
-              </div>
-            )}
           </div>
-        </div>
 
-        {/* Right Column: Live Candidate Studio & Computer Vision HUD */}
-        <div className="lg:col-span-7 space-y-6">
-          <div className="p-7 rounded-3xl light-card border border-slate-200 space-y-6">
-            
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
-                <Video className="w-4 h-4 text-emerald-600" /> Candidate Video & Biometric Feed
-              </h2>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Live Vision Telemetry 60 FPS
-              </span>
-            </div>
-
-            {/* Video Viewport with HUD Overlay */}
-            <div className="relative aspect-video rounded-2xl overflow-hidden bg-slate-950 border border-slate-800 shadow-md">
+          {/* Candidate Webcam & Real-Time Computer Vision HUD */}
+          <div className="space-y-4">
+            <div className="relative rounded-3xl overflow-hidden bg-slate-950 aspect-4/3 border border-slate-800 shadow-xl flex items-center justify-center">
               <video
                 ref={videoRef}
                 autoPlay
                 playsInline
                 muted
-                className="w-full h-full object-cover transform -scale-x-100"
+                className="w-full h-full object-cover -scale-x-100"
               />
 
-              {/* HUD Target Reticle */}
-              <div 
-                className="absolute border-2 border-cyan-400/80 rounded-xl transition-all duration-300 pointer-events-none shadow-[0_0_15px_rgba(6,182,212,0.4)]"
-                style={{
-                  left: `${telemetry.faceBox.x}%`,
-                  top: `${telemetry.faceBox.y}%`,
-                  width: `${telemetry.faceBox.width}%`,
-                  height: `${telemetry.faceBox.height}%`
-                }}
-              >
-                <div className="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-cyan-300" />
-                <div className="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-cyan-300" />
-                <div className="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-cyan-300" />
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-cyan-300" />
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-md shadow-cyan-400 animate-ping" />
-              </div>
+              {/* HUD Reticle Overlay */}
+              <div className="absolute inset-0 pointer-events-none flex flex-col justify-between p-4">
+                
+                {/* Top HUD Stats */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-emerald-400">
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>EYE CONTACT: {telemetry.eyeContactRatio}%</span>
+                  </div>
 
-              {/* HUD Top Bar */}
-              <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <div className="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-cyan-300">
-                  <Eye className="w-3 h-3 text-cyan-400" />
-                  <span>EYE CONTACT: {telemetry.eyeContactRatio}% STABLE</span>
+                  <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-indigo-300">
+                    <Smile className="w-3.5 h-3.5" />
+                    <span>{telemetry.sentiment}</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-emerald-300">
-                  <Smile className="w-3 h-3 text-emerald-400" />
-                  <span>{telemetry.sentiment.toUpperCase()}</span>
-                </div>
-              </div>
-
-              {/* HUD Bottom Bar */}
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <div className="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-slate-300">
-                  <Activity className="w-3 h-3 text-indigo-400" />
-                  <span>POSTURE: {telemetry.postureStability}%</span>
+                {/* Center Target Box */}
+                <div className="self-center w-36 h-36 border border-emerald-500/40 rounded-2xl flex items-center justify-center relative">
+                  <div className="w-2 h-2 rounded-full bg-emerald-400 animate-ping absolute" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                  <span className="absolute -bottom-5 text-[9px] font-mono text-emerald-400/80 uppercase">
+                    Face Alignment Target
+                  </span>
                 </div>
 
-                <div className="flex items-center gap-1.5 bg-slate-950/80 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/10 text-[10px] font-mono text-amber-300">
-                  <span>WPM: {acoustics.wpm} | FILLERS: {acoustics.fillerCount}</span>
+                {/* Bottom HUD Metrics */}
+                <div className="flex items-center justify-between text-[10px] font-mono text-slate-300">
+                  <span className="bg-black/60 px-2 py-1 rounded-lg border border-white/10">
+                    POSTURE: {telemetry.postureStability}%
+                  </span>
+                  <span className="bg-black/60 px-2 py-1 rounded-lg border border-white/10 text-amber-300">
+                    WPM: {acoustics.wpm} | FILLERS: {acoustics.fillerCount}
+                  </span>
                 </div>
               </div>
             </div>
@@ -392,7 +339,7 @@ export default function AiInterviewStudioView({
             {/* Candidate Response Workspace */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-slate-700">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300">
                   Candidate Spoken & Written Answer:
                 </label>
 
@@ -402,11 +349,11 @@ export default function AiInterviewStudioView({
                   className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                     isCandidateSpeaking
                       ? 'bg-red-600 hover:bg-red-700 text-white animate-pulse shadow-md shadow-red-600/25'
-                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-2xs'
+                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs'
                   }`}
                 >
                   {isCandidateSpeaking ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
-                  <span>{isCandidateSpeaking ? 'Stop Recording' : 'Speak into Microphone'}</span>
+                  <span>{isCandidateSpeaking ? 'Stop Mic' : 'Speak into Microphone'}</span>
                 </button>
               </div>
 
@@ -415,19 +362,23 @@ export default function AiInterviewStudioView({
                 onChange={(e) => setCandidateAnswer(e.target.value)}
                 placeholder="Click 'Speak into Microphone' or type your response here..."
                 rows={3}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-3.5 text-xs text-slate-900 placeholder-slate-400 font-sans focus:ring-2 focus:ring-indigo-500 focus:bg-white outline-none leading-relaxed resize-none"
+                className={`w-full rounded-2xl p-3.5 text-xs outline-none leading-relaxed resize-none border transition-all ${
+                  isDark 
+                    ? 'bg-slate-900 border-slate-700 text-slate-100 placeholder-slate-500 focus:border-indigo-500' 
+                    : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:bg-white focus:border-indigo-500'
+                }`}
               />
 
               <div className="flex items-center justify-between pt-1">
-                <span className="text-[11px] text-slate-500 font-medium">
-                  {candidateAnswer.split(/\s+/).filter(Boolean).length} words spoken
+                <span className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+                  {candidateAnswer.split(/\s+/).filter(Boolean).length} words recorded
                 </span>
 
                 <button
                   id="submit-answer-next-btn"
                   onClick={handleSubmitAnswer}
                   disabled={isEvaluating}
-                  className="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-2 shadow-xs transition-all cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
                 >
                   {isEvaluating ? (
                     <>
@@ -444,10 +395,10 @@ export default function AiInterviewStudioView({
               </div>
 
               {isCompleted && (
-                <div className="mt-4 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
+                <div className="mt-4 p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-bold text-emerald-800">All 4 Interview Rounds Successfully Completed!</div>
-                    <div className="text-[11px] text-emerald-700">Biometric and verbal telemetry compiled into your placement dossier.</div>
+                    <div className="text-xs font-bold text-emerald-800 dark:text-emerald-300">All 4 Interview Rounds Successfully Completed!</div>
+                    <div className="text-[11px] text-emerald-700 dark:text-emerald-400">Biometric and verbal telemetry compiled into your placement dossier.</div>
                   </div>
                   <button
                     id="view-final-dossier-btn"

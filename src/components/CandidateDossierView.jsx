@@ -13,11 +13,13 @@ import {
   ShieldCheck, 
   Sparkles,
   Users,
-  ChevronLeft
+  ChevronLeft,
+  Building2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export default function CandidateDossierView({ 
+  isDark,
   candidateState, 
   activeDrive, 
   onResetWorkflow,
@@ -43,300 +45,222 @@ export default function CandidateDossierView({
   const compositeScore = Math.round((atsScore * 0.35) + (techScore * 0.35) + (interviewScore * 0.30));
 
   let verdict = 'Strong Hire';
-  let verdictStyle = 'bg-emerald-50 text-emerald-800 border-emerald-300';
+  let verdictStyle = 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-300 dark:border-emerald-800';
   let verdictSummary = 'Exceptional candidate demonstrating deep technical mastery, structured STAR communication, and strong cultural alignment.';
 
   if (compositeScore < 70) {
     verdict = 'Needs Improvement';
-    verdictStyle = 'bg-red-50 text-red-800 border-red-300';
+    verdictStyle = 'bg-red-50 text-red-800 border-red-300 dark:bg-red-950/80 dark:text-red-300 dark:border-red-800';
     verdictSummary = 'Candidate requires targeted coaching in technical fundamentals and speech filler reduction prior to corporate placement drives.';
   } else if (compositeScore < 82) {
     verdict = 'Hire with Training';
-    verdictStyle = 'bg-amber-50 text-amber-800 border-amber-300';
+    verdictStyle = 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950/80 dark:text-amber-300 dark:border-amber-800';
     verdictSummary = 'Solid candidate with demonstrable aptitude; recommend fast-track onboarding and structured behavioral mentoring.';
   }
 
   // 5-Axis Radar Chart SVG Points Calculation
   const cx = 150;
   const cy = 150;
-  const r = 100;
+  const radius = 105;
 
-  const metrics = [
-    { label: 'ATS Match', val: atsScore, angle: -90 },
-    { label: 'Technical Depth', val: techScore, angle: -18 },
-    { label: 'Communication', val: interviewScore, angle: 54 },
-    { label: 'Eye Contact', val: eyeContactRatio, angle: 126 },
-    { label: 'STAR Rigor', val: Math.min(100, interviewScore + 2), angle: 198 }
+  const axes = [
+    { label: 'ATS Match', val: atsScore },
+    { label: 'Tech Depth', val: techScore },
+    { label: 'Communication', val: interviewScore },
+    { label: 'Eye Contact', val: eyeContactRatio },
+    { label: 'STAR Rigor', val: Math.min(100, interviewScore + 6) }
   ];
 
-  const getPoint = (val, angleDeg) => {
-    const rad = (angleDeg * Math.PI) / 180;
-    const distance = (val / 100) * r;
-    return `${cx + distance * Math.cos(rad)},${cy + distance * Math.sin(rad)}`;
-  };
+  const points = axes.map((axis, i) => {
+    const angle = (Math.PI * 2 / axes.length) * i - Math.PI / 2;
+    const r = (axis.val / 100) * radius;
+    return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+  }).join(' ');
 
-  const polygonPoints = metrics.map(m => getPoint(m.val, m.angle)).join(' ');
+  const gridCircles = [0.25, 0.5, 0.75, 1.0].map((frac, idx) => (
+    <polygon
+      key={idx}
+      points={axes.map((_, i) => {
+        const angle = (Math.PI * 2 / axes.length) * i - Math.PI / 2;
+        const r = frac * radius;
+        return `${cx + r * Math.cos(angle)},${cy + r * Math.sin(angle)}`;
+      }).join(' ')}
+      fill="none"
+      stroke={isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(148, 163, 184, 0.3)"}
+      strokeWidth="1"
+    />
+  ));
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 print:p-0 print:max-w-none">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 space-y-8 animate-in fade-in duration-300">
       
-      {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 print:hidden">
-        <button
-          onClick={onResetWorkflow}
-          className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1.5 transition-colors cursor-pointer"
-        >
-          <ChevronLeft className="w-4 h-4" /> Start New Assessment / Switch Drive
-        </button>
+      {/* Top Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
+        <div>
+          <button
+            onClick={onResetWorkflow}
+            className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center gap-1 mb-2 transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="w-3.5 h-3.5" /> Start New Evaluation
+          </button>
+          <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+            Official Placement Dossier & Diagnostic Report
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Certified Campus Assessment for <strong className="text-slate-900 dark:text-white">{activeDrive.company}</strong> ({activeDrive.role})
+          </p>
+        </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => window.print()}
-            className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-bold flex items-center gap-2 border border-slate-200 transition-colors shadow-2xs cursor-pointer"
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition-all cursor-pointer ${
+              isDark 
+                ? 'bg-slate-900 border-slate-700 text-slate-300 hover:bg-slate-800' 
+                : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-xs'
+            }`}
           >
-            <Printer className="w-3.5 h-3.5" /> Print / Save Dossier PDF
+            <Printer className="w-3.5 h-3.5" /> Print / Save PDF
           </button>
 
           <button
             onClick={onSwitchToTpo}
-            className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold flex items-center gap-2 shadow-sm transition-all cursor-pointer"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 shadow-md shadow-indigo-600/25 transition-all cursor-pointer"
           >
-            <Users className="w-3.5 h-3.5" /> Open HR Placement Command Center
+            <Users className="w-3.5 h-3.5" /> View in TPO Command Center
           </button>
         </div>
       </div>
 
-      {/* Hero Certificate & Dossier Header */}
-      <div className="p-8 rounded-3xl light-card border border-slate-200 space-y-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4" /> Official Candidate Placement Evaluation Dossier
-            </div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Aarav Sharma — <span className="text-slate-500 font-normal">Roll No: 21CS042</span>
-            </h1>
-            <p className="text-sm text-slate-600 mt-1">
-              Candidate Evaluated for: <strong className="text-slate-900">{activeDrive.company}</strong> ({activeDrive.role})
+      {/* Main Dossier Certificate Card */}
+      <div className={`p-8 sm:p-10 rounded-3xl border transition-all ${
+        isDark ? 'glass-panel-dark' : 'glass-panel-light'
+      } space-y-8 relative overflow-hidden shadow-2xl`}>
+        
+        {/* Certificate Header Banner */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-200/80 dark:border-slate-800">
+          <div className="space-y-1">
+            <span className="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+              Department of Information Technology • Placement Verification
+            </span>
+            <h2 className="text-2xl font-black">Atharva P.</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Roll No: <span className="font-mono text-slate-800 dark:text-slate-200">IT-2026-042</span> • Aggregate: 84.6% • Diploma IT Class of 2026
             </p>
           </div>
 
-          {/* Placement Verdict Stamp Badge */}
-          <div className={`p-4 rounded-2xl border text-center ${verdictStyle} shadow-xs`}>
-            <div className="text-[11px] uppercase tracking-wider font-extrabold">Placement Verdict</div>
-            <div className="text-2xl font-black mt-0.5">{verdict}</div>
-            <div className="text-xs font-semibold opacity-90 mt-1">Composite Score: {compositeScore}%</div>
+          <div className="flex items-center gap-4">
+            <div className="text-right">
+              <span className="text-xs font-bold text-slate-400 block uppercase">Composite Rating</span>
+              <span className="text-4xl font-black text-indigo-600 dark:text-indigo-400">{compositeScore}/100</span>
+            </div>
+            <div className={`px-4 py-2 rounded-2xl border text-xs font-black uppercase tracking-wider ${verdictStyle}`}>
+              {verdict}
+            </div>
           </div>
         </div>
 
-        <p className="text-xs text-slate-700 bg-slate-50 p-4 rounded-xl border border-slate-200 leading-relaxed">
-          <strong className="text-indigo-900 font-bold">Executive Summary: </strong>
-          {verdictSummary}
-        </p>
-      </div>
-
-      {/* Main Analysis Grid: Radar Chart + 3-Pillar Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Left Column: Interactive Radar Pentagonal Chart */}
-        <div className="lg:col-span-5 p-6 rounded-2xl light-card border border-slate-200 space-y-4 flex flex-col items-center justify-center">
-          <h2 className="text-sm font-bold text-slate-900 flex items-center gap-2 self-start">
-            <TrendingUp className="w-4 h-4 text-indigo-600" /> Multi-Dimensional Competency Radar
-          </h2>
-
-          <div className="relative w-[300px] h-[300px] flex items-center justify-center">
-            <svg width="300" height="300" className="overflow-visible">
-              {/* Concentric Reference Rings */}
-              {[25, 50, 75, 100].map((ringVal) => {
-                const ringPoints = metrics.map(m => getPoint(ringVal, m.angle)).join(' ');
-                return (
-                  <polygon
-                    key={ringVal}
-                    points={ringPoints}
-                    fill="none"
-                    stroke="#E2E8F0"
-                    strokeWidth="1.2"
-                  />
-                );
-              })}
-
-              {/* Axis Rays */}
-              {metrics.map((m, idx) => {
-                const outer = getPoint(100, m.angle).split(',');
+        {/* 5-Axis Radar Chart & Dimension Scores */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+          
+          {/* Radar Visualization */}
+          <div className="flex flex-col items-center justify-center p-4">
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">
+              5-Axis Placement Competency Radar
+            </div>
+            <svg viewBox="0 0 300 300" className="w-full max-w-xs overflow-visible">
+              {gridCircles}
+              
+              {/* Axes lines */}
+              {axes.map((_, i) => {
+                const angle = (Math.PI * 2 / axes.length) * i - Math.PI / 2;
                 return (
                   <line
-                    key={idx}
+                    key={i}
                     x1={cx}
                     y1={cy}
-                    x2={outer[0]}
-                    y2={outer[1]}
-                    stroke="#CBD5E1"
+                    x2={cx + radius * Math.cos(angle)}
+                    y2={cy + radius * Math.sin(angle)}
+                    stroke={isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(148, 163, 184, 0.4)"}
                     strokeWidth="1"
-                    strokeDasharray="2,2"
+                    strokeDasharray="2 2"
                   />
                 );
               })}
 
-              {/* Candidate Data Polygon */}
+              {/* Data Polygon */}
               <polygon
-                points={polygonPoints}
-                fill="rgba(79, 70, 229, 0.2)"
-                stroke="#4F46E5"
+                points={points}
+                fill={isDark ? "rgba(99, 102, 241, 0.45)" : "rgba(79, 70, 229, 0.25)"}
+                stroke={isDark ? "#818CF8" : "#4F46E5"}
                 strokeWidth="2.5"
-                className="filter drop-shadow-[0_0_8px_rgba(79,70,229,0.3)]"
               />
 
-              {/* Data Vertex Dots */}
-              {metrics.map((m, idx) => {
-                const pt = getPoint(m.val, m.angle).split(',');
+              {/* Axis Labels */}
+              {axes.map((axis, i) => {
+                const angle = (Math.PI * 2 / axes.length) * i - Math.PI / 2;
+                const labelR = radius + 22;
+                const x = cx + labelR * Math.cos(angle);
+                const y = cy + labelR * Math.sin(angle);
                 return (
-                  <circle
-                    key={idx}
-                    cx={pt[0]}
-                    cy={pt[1]}
-                    r="4.5"
-                    fill="#0284C7"
-                    stroke="#FFFFFF"
-                    strokeWidth="2"
-                  />
+                  <text
+                    key={i}
+                    x={x}
+                    y={y}
+                    fontSize="10"
+                    fontWeight="bold"
+                    fill={isDark ? "#CBD5E1" : "#475569"}
+                    textAnchor="middle"
+                    dominantBaseline="central"
+                  >
+                    {axis.label} ({axis.val}%)
+                  </text>
                 );
               })}
             </svg>
           </div>
 
-          {/* Radar Legend */}
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11px] w-full pt-2 border-t border-slate-200">
-            {metrics.map((m, idx) => (
-              <div key={idx} className="flex items-center justify-between text-slate-700">
-                <span className="text-slate-500 font-medium">{m.label}:</span>
-                <span className="font-bold text-slate-900">{m.val}%</span>
+          {/* Breakdown Cards */}
+          <div className="space-y-3">
+            <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-indigo-500" /> Phase 1: ATS Resume Engine
+                </span>
+                <span className="text-xs font-black text-indigo-600 dark:text-indigo-400">{atsScore}%</span>
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Right Column: Three Pillars Score Cards */}
-        <div className="lg:col-span-7 space-y-4">
-          
-          {/* Pillar 1: ATS Resume Screening Card */}
-          <div className="p-5 rounded-2xl light-card border border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-200 flex items-center justify-center text-indigo-600">
-                <FileText className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Phase 1: ATS Resume Qualification</h3>
-                <p className="text-xs text-slate-500 font-medium">Keyword Density, Formatting & Quantification Metrics</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xl font-black text-indigo-600">{atsScore}%</div>
-              <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Passed Cutoff</span>
-            </div>
-          </div>
-
-          {/* Pillar 2: Technical Assessment Card */}
-          <div className="p-5 rounded-2xl light-card border border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600">
-                <Code2 className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Phase 2: MNC Technical Round</h3>
-                <p className="text-xs text-slate-500 font-medium">Core CS Fundamentals & Algorithmic Problem Solving</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xl font-black text-emerald-600">{techScore}%</div>
-              <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Optimal Complexity</span>
-            </div>
-          </div>
-
-          {/* Pillar 3: AI HR Interview Card */}
-          <div className="p-5 rounded-2xl light-card border border-slate-200 flex items-center justify-between">
-            <div className="flex items-center gap-3.5">
-              <div className="w-10 h-10 rounded-xl bg-violet-50 border border-violet-200 flex items-center justify-center text-violet-600">
-                <Bot className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-slate-900">Phase 3: Live Multimodal AI HR Interview</h3>
-                <p className="text-xs text-slate-500 font-medium">STAR Behavioral Structure & Biometric Composure</p>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-xl font-black text-violet-600">{interviewScore}%</div>
-              <span className="text-[10px] text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">High Composure</span>
-            </div>
-          </div>
-
-          {/* Speech & Biometric Diagnostics Strip */}
-          <div className="grid grid-cols-3 gap-3 pt-2">
-            <div className="p-3.5 rounded-xl light-card border border-slate-200 text-center">
-              <div className="text-[11px] text-slate-500 font-semibold">Gaze & Eye Contact</div>
-              <div className="text-base font-black text-cyan-600 mt-0.5">{eyeContactRatio}%</div>
-              <div className="text-[10px] text-slate-400">Stable Camera Focus</div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">STAR quantification high, technical keywords verified against job description.</p>
             </div>
 
-            <div className="p-3.5 rounded-xl light-card border border-slate-200 text-center">
-              <div className="text-[11px] text-slate-500 font-semibold">Speech Rate (WPM)</div>
-              <div className="text-base font-black text-emerald-600 mt-0.5">{speechWpm} WPM</div>
-              <div className="text-[10px] text-slate-400">Optimal Pace</div>
+            <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-emerald-500" /> Phase 2: MNC Technical Round
+                </span>
+                <span className="text-xs font-black text-emerald-600 dark:text-emerald-400">{techScore}%</span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Zero syntax errors, passed all test cases with optimal time complexity.</p>
             </div>
 
-            <div className="p-3.5 rounded-xl light-card border border-slate-200 text-center">
-              <div className="text-[11px] text-slate-500 font-semibold">Filler Words Count</div>
-              <div className="text-base font-black text-amber-600 mt-0.5">{fillerCount}</div>
-              <div className="text-[10px] text-slate-400">Minimal Hesitation</div>
+            <div className={`p-4 rounded-2xl border ${isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-xs font-bold flex items-center gap-2">
+                  <Bot className="w-4 h-4 text-purple-500" /> Phase 3: Multimodal AI HR Round
+                </span>
+                <span className="text-xs font-black text-purple-600 dark:text-purple-400">{interviewScore}%</span>
+              </div>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Eye contact ratio: {eyeContactRatio}%, speech rate: {speechWpm} WPM with minimal filler words.</p>
             </div>
           </div>
 
         </div>
 
-      </div>
-
-      {/* Recruiter Insights & Actionable Feedback */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        
-        {/* Key Strengths */}
-        <div className="p-6 rounded-2xl light-card border border-slate-200 space-y-3">
-          <div className="text-xs font-bold text-emerald-800 flex items-center gap-1.5 uppercase tracking-wider">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Core Candidate Strengths:
+        {/* Verdict Summary Callout */}
+        <div className={`p-5 rounded-2xl border ${verdictStyle}`}>
+          <div className="text-xs font-bold uppercase tracking-wider mb-1 flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4" /> Official Campus Placement Verdict:
           </div>
-          <ul className="text-xs text-slate-700 space-y-2">
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 font-bold">•</span>
-              <span><strong>Strong Algorithmic Rigor:</strong> Implemented optimal O(N) hash map solution with zero syntax errors.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 font-bold">•</span>
-              <span><strong>High Metric Quantification:</strong> Resume effectively highlights percentage latency reductions and distributed concurrency metrics.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-emerald-600 font-bold">•</span>
-              <span><strong>Poised Visual Composure:</strong> Maintained over 90% direct eye contact with steady head posture throughout the HR round.</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Areas for Improvement */}
-        <div className="p-6 rounded-2xl light-card border border-slate-200 space-y-3">
-          <div className="text-xs font-bold text-indigo-800 flex items-center gap-1.5 uppercase tracking-wider">
-            <Sparkles className="w-4 h-4 text-indigo-600" /> Placement Coaching Guidance:
-          </div>
-          <ul className="text-xs text-slate-700 space-y-2">
-            <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span><strong>STAR Result Articulation:</strong> When describing team conflict, state the business impact and retrospectives more explicitly.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span><strong>Pause Discipline:</strong> Replace occasional filler words with deliberate 1-second pauses to command authority.</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-indigo-600 font-bold">•</span>
-              <span><strong>Cloud Scale Deep Dive:</strong> Prepare architecture trade-off justifications for microservices vs monolithic databases.</span>
-            </li>
-          </ul>
+          <p className="text-xs leading-relaxed">{verdictSummary}</p>
         </div>
 
       </div>
