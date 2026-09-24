@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   Download, 
@@ -16,19 +16,28 @@ import {
   FileSpreadsheet,
   ArrowRight
 } from 'lucide-react';
-import { INITIAL_TPO_CANDIDATES, MNC_JOB_DRIVES } from '../data/mockData';
+import { INITIAL_TPO_CANDIDATES, CORPORATE_CANDIDATES } from '../data/mockData';
 
 export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchToStudent, currentTenant }) {
-  const [candidates, setCandidates] = useState(INITIAL_TPO_CANDIDATES);
+  const getCandidatesForTenant = () => {
+    return currentTenant?.id === 'corporate_tech' ? CORPORATE_CANDIDATES : INITIAL_TPO_CANDIDATES;
+  };
+
+  const [candidates, setCandidates] = useState(getCandidatesForTenant);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDriveFilter, setSelectedDriveFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedCandidateModal, setSelectedCandidateModal] = useState(null);
 
+  useEffect(() => {
+    setCandidates(currentTenant?.id === 'corporate_tech' ? CORPORATE_CANDIDATES : INITIAL_TPO_CANDIDATES);
+    setSelectedDriveFilter('All');
+  }, [currentTenant]);
+
   const filteredCandidates = candidates.filter(cand => {
     const matchSearch = cand.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
       cand.rollNo.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchDrive = selectedDriveFilter === 'All' || cand.driveApplied.includes(selectedDriveFilter);
+    const matchDrive = selectedDriveFilter === 'All' || cand.driveApplied === selectedDriveFilter;
     const matchStatus = statusFilter === 'All' || cand.status === statusFilter;
     return matchSearch && matchDrive && matchStatus;
   });
@@ -40,7 +49,7 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
   const avgInterview = Math.round(candidates.reduce((a, b) => a + b.interviewScore, 0) / (totalApplicants || 1));
 
   const handleExportCsv = () => {
-    const headers = ['Roll No', 'Name', 'Email', 'Target Drive', 'ATS Match %', 'Technical Score %', 'HR Interview %', 'Eye Contact %', 'WPM', 'Filler Count', 'Placement Verdict', 'Status'];
+    const headers = ['Applicant ID', 'Name', 'Email', 'Applied Position', 'ATS Match %', 'Technical Score %', 'HR Interview %', 'Eye Contact %', 'WPM', 'Filler Count', 'Hiring Verdict', 'Status'];
     const rows = filteredCandidates.map(c => [
       c.rollNo,
       `"${c.name}"`,
@@ -60,7 +69,7 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `${(currentTenant?.name || 'TPO').replace(/\s+/g, '_')}_Placement_Report.csv`);
+    link.setAttribute('download', `${(currentTenant?.name || 'Recruitment').replace(/\s+/g, '_')}_Hiring_Report.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -78,14 +87,14 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-              {currentTenant?.tpoTitle || 'TPO Placement Command Center'}
+              {currentTenant?.hrDashboardTitle || 'HR Recruitment Command Center'}
             </h1>
             <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-              Institutional Admin
+              {currentTenant?.hrRoleLabel || 'HR Recruiter'} Admin
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Private Institutional Pipeline for <strong className="text-slate-900 dark:text-white">{currentTenant?.name || 'Government Polytechnic'}</strong> • {currentTenant?.division || 'Dept of IT'}
+            Official Recruitment Pipeline for <strong className="text-slate-900 dark:text-white">{currentTenant?.name || 'Recruitment Organization'}</strong> • {currentTenant?.division || 'Human Resources'}
           </p>
         </div>
 
@@ -106,7 +115,7 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
                 : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 shadow-xs'
             }`}
           >
-            Switch to Student View
+            Switch to Applicant View
           </button>
         </div>
       </div>
@@ -171,9 +180,9 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
               isDark ? 'bg-slate-800 border-slate-700 text-slate-200' : 'bg-slate-50 border-slate-200 text-slate-700'
             }`}
           >
-            <option value="All">All Corporate Drives</option>
-            {MNC_JOB_DRIVES.map(d => (
-              <option key={d.id} value={d.company}>{d.company}</option>
+            <option value="All">All Job Positions</option>
+            {(currentTenant?.openings || []).map(opening => (
+              <option key={opening.id} value={opening.title}>{opening.title}</option>
             ))}
           </select>
 
@@ -203,7 +212,7 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
             }`}>
               <tr>
                 <th className="p-4">Candidate</th>
-                <th className="p-4">Target Company</th>
+                <th className="p-4">Applied Position</th>
                 <th className="p-4">ATS Match</th>
                 <th className="p-4">Tech Round</th>
                 <th className="p-4">HR Round</th>
@@ -278,11 +287,11 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                <span className="text-slate-400">Target Drive:</span>
+                <span className="text-slate-400">Applied Position:</span>
                 <div className="font-bold mt-0.5">{selectedCandidateModal.driveApplied}</div>
               </div>
               <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>
-                <span className="text-slate-400">Placement Verdict:</span>
+                <span className="text-slate-400">Hiring Verdict:</span>
                 <div className="font-bold text-emerald-500 mt-0.5">{selectedCandidateModal.verdict}</div>
               </div>
               <div className={`p-3 rounded-xl border ${isDark ? 'bg-slate-800 border-slate-700' : 'bg-slate-50 border-slate-200'}`}>

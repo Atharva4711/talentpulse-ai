@@ -120,7 +120,7 @@ export function scanResume({ resumeText = '', jobDrive }) {
     recommendations.push('Provide a valid 10-digit phone number with country code (+91).');
   }
   if (!contactInfo.github && !contactInfo.portfolio) {
-    redFlags.push('No GitHub or Portfolio link detected (Mandatory for MNC software roles).');
+    redFlags.push('No GitHub or Portfolio link detected (Recommended for technical roles).');
     recommendations.push('Add an active GitHub profile showcasing repository commits and live project URLs.');
   }
   if (sectionsFound < 3) {
@@ -132,7 +132,7 @@ export function scanResume({ resumeText = '', jobDrive }) {
     recommendations.push('Quantify your project outcomes (e.g. "Optimized API latency by 35%" or "Managed 1,000+ records").');
   }
   if (missingHardSkills.length > 0) {
-    recommendations.push(`Targeted Missing Keywords to add for ${jobDrive?.company || 'this role'}: ${missingHardSkills.slice(0, 4).join(', ')}.`);
+    recommendations.push(`Targeted Missing Keywords to add for ${jobDrive?.title || jobDrive?.role || 'this position'}: ${missingHardSkills.slice(0, 4).join(', ')}.`);
   }
 
   // 7. Overall Weighted ATS Score Calculation

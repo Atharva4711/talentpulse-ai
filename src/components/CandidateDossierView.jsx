@@ -22,6 +22,7 @@ export default function CandidateDossierView({
   isDark,
   candidateState, 
   activeDrive, 
+  currentTenant,
   onResetWorkflow,
   onSwitchToTpo 
 }) {
@@ -104,10 +105,10 @@ export default function CandidateDossierView({
             <ChevronLeft className="w-3.5 h-3.5" /> Start New Evaluation
           </button>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Official Placement Dossier & Diagnostic Report
+            Official Recruitment Evaluation Dossier
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Certified Campus Assessment for <strong className="text-slate-900 dark:text-white">{activeDrive.company}</strong> ({activeDrive.role})
+            Certified Assessment for <strong className="text-slate-900 dark:text-white">{activeDrive.title || activeDrive.role}</strong> at {currentTenant?.name || 'Recruitment Organization'}
           </p>
         </div>
 
@@ -127,7 +128,7 @@ export default function CandidateDossierView({
             onClick={onSwitchToTpo}
             className="px-4 py-2 rounded-xl text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white flex items-center gap-1.5 shadow-md shadow-indigo-600/25 transition-all cursor-pointer"
           >
-            <Users className="w-3.5 h-3.5" /> View in TPO Command Center
+            <Users className="w-3.5 h-3.5" /> View in HR Command Center
           </button>
         </div>
       </div>

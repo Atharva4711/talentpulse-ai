@@ -23,6 +23,7 @@ import { aiGateway } from '../utils/aiGateway';
 export default function AiInterviewStudioView({ 
   isDark,
   activeDrive, 
+  currentTenant,
   candidateState, 
   setCandidateState, 
   onProceedToDossier,
@@ -146,6 +147,8 @@ export default function AiInterviewStudioView({
       question: currentQ.question,
       candidateAnswer,
       stage: currentQ.stage,
+      organization: currentTenant?.name || 'Recruitment Organization',
+      role: activeDrive.title || activeDrive.role || 'Job Candidate',
       apiKey: apiKeyInput
     });
 
@@ -206,7 +209,7 @@ export default function AiInterviewStudioView({
             Multimodal AI HR Interview Studio
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Real-time Computer Vision Gaze HUD & Acoustic Telemetry for <strong className="text-slate-900 dark:text-white">{activeDrive.company}</strong>
+            Real-time Computer Vision Gaze HUD & Acoustic Telemetry for <strong className="text-slate-900 dark:text-white">{activeDrive.title || activeDrive.role}</strong> at {currentTenant?.name || 'Client Organization'}
           </p>
         </div>
 

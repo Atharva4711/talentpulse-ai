@@ -16,7 +16,7 @@ import {
   Calendar
 } from 'lucide-react';
 
-export default function UserProfileModal({ isOpen, onClose, isDark, candidateState, userRole, setUserRole }) {
+export default function UserProfileModal({ isOpen, onClose, isDark, candidateState, userRole, setUserRole, currentTenant }) {
   if (!isOpen) return null;
 
   const atsScore = candidateState.atsResult?.score || 92;
@@ -45,7 +45,7 @@ export default function UserProfileModal({ isOpen, onClose, isDark, candidateSta
             </div>
             <div>
               <h2 className="text-xl font-bold tracking-tight">Candidate Profile & Readiness</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Campus Placement Verification ID: TP-2026-IT42</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Applicant ID: TP-2026-IT42 • {currentTenant?.name || 'TalentPulse Platform'}</p>
             </div>
           </div>
           <button 
@@ -187,7 +187,7 @@ export default function UserProfileModal({ isOpen, onClose, isDark, candidateSta
 
         {/* Modal Footer */}
         <div className="pt-4 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between relative z-10 text-xs text-slate-500">
-          <span>Targeting TCS Digital & Amazon 2026</span>
+          <span>Targeting Opportunities at {currentTenant?.name || 'Selected Client'}</span>
           <button
             onClick={onClose}
             className="px-5 py-2 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white transition-all shadow-md cursor-pointer"

@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   Activity, 
-  GraduationCap, 
+  User, 
   Building2,
   Sun,
   Moon,
@@ -20,6 +20,7 @@ export default function Navbar({
   onOpenTenantConfig
 }) {
   const isCandidate = userRole === 'student';
+  const hrLabel = currentTenant?.hrRoleLabel || (currentTenant?.id === 'college_polytechnic' ? 'College HR' : 'Company HR');
 
   return (
     <header className={`sticky top-0 z-50 border-b backdrop-blur-xl transition-all duration-200 ${
@@ -44,7 +45,7 @@ export default function Navbar({
                   TalentPulse <span className="text-indigo-600 dark:text-indigo-400">AI</span>
                 </span>
                 <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold truncate max-w-[180px] sm:max-w-xs">
-                  {currentTenant?.name || 'Government Polytechnic Pune'}
+                  {currentTenant?.name || 'Recruitment Platform'}
                 </p>
               </div>
             </div>
@@ -70,7 +71,7 @@ export default function Navbar({
           {/* Right: Clean Persona Switcher + Theme Toggle + User Profile */}
           <div className="flex items-center gap-2 sm:gap-3">
             
-            {/* Student vs TPO Switcher */}
+            {/* Applicant vs HR Switcher */}
             <div className={`flex items-center p-1 rounded-xl border ${
               isDark ? 'bg-slate-900 border-slate-800' : 'bg-slate-100 border-slate-200'
             }`}>
@@ -86,8 +87,8 @@ export default function Navbar({
                     : 'text-slate-500 hover:text-slate-800 dark:hover:text-slate-200'
                 }`}
               >
-                <GraduationCap className="w-3.5 h-3.5" />
-                <span>Student</span>
+                <User className="w-3.5 h-3.5" />
+                <span>Applicant</span>
               </button>
 
               <button
@@ -103,7 +104,7 @@ export default function Navbar({
                 }`}
               >
                 <Building2 className="w-3.5 h-3.5" />
-                <span>TPO Admin</span>
+                <span>{hrLabel}</span>
               </button>
             </div>
 

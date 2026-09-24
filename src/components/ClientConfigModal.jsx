@@ -112,16 +112,16 @@ export default function ClientConfigModal({
                 </div>
 
                 <div className="pt-4 mt-3 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-semibold text-indigo-600 dark:text-indigo-400">
-                  <span>Enrolled: 120 Students</span>
-                  <span>4 Approved Drives</span>
+                  <span>{CLIENT_TENANTS.college_polytechnic.candidatePoolLabel}</span>
+                  <span>{CLIENT_TENANTS.college_polytechnic.openingsCountLabel}</span>
                 </div>
               </div>
 
               {/* Instance 2: Corporate Enterprise Client */}
               <div
-                onClick={() => setCurrentTenant(CLIENT_TENANTS.corporate_tcs)}
+                onClick={() => setCurrentTenant(CLIENT_TENANTS.corporate_tech)}
                 className={`p-5 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
-                  currentTenant.id === 'corporate_tcs'
+                  currentTenant.id === 'corporate_tech'
                     ? isDark
                       ? 'bg-indigo-950/50 border-indigo-500 ring-2 ring-indigo-500/30 shadow-lg'
                       : 'bg-white border-indigo-600 ring-2 ring-indigo-500/20 shadow-md'
@@ -135,25 +135,25 @@ export default function ClientConfigModal({
                     <span className="p-2 rounded-xl bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300">
                       <Building2 className="w-5 h-5" />
                     </span>
-                    {currentTenant.id === 'corporate_tcs' && (
+                    {currentTenant.id === 'corporate_tech' && (
                       <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Active Client
                       </span>
                     )}
                   </div>
 
-                  <h3 className="text-sm font-bold mt-2">{CLIENT_TENANTS.corporate_tcs.name}</h3>
+                  <h3 className="text-sm font-bold mt-2">{CLIENT_TENANTS.corporate_tech.name}</h3>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                    {CLIENT_TENANTS.corporate_tcs.division}
+                    {CLIENT_TENANTS.corporate_tech.division}
                   </p>
                   <p className="text-[10px] text-slate-400">
-                    License: {CLIENT_TENANTS.corporate_tcs.licenseStatus}
+                    License: {CLIENT_TENANTS.corporate_tech.licenseStatus}
                   </p>
                 </div>
 
                 <div className="pt-4 mt-3 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[11px] font-semibold text-purple-600 dark:text-purple-400">
-                  <span>Candidate Pool: 450</span>
-                  <span>Corporate Track</span>
+                  <span>{CLIENT_TENANTS.corporate_tech.candidatePoolLabel}</span>
+                  <span>{CLIENT_TENANTS.corporate_tech.openingsCountLabel}</span>
                 </div>
               </div>
 

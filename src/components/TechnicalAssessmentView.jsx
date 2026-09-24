@@ -20,6 +20,7 @@ import { TECHNICAL_QUESTIONS, CODING_CHALLENGE } from '../data/mockData';
 export default function TechnicalAssessmentView({ 
   isDark,
   activeDrive, 
+  currentTenant,
   candidateState, 
   setCandidateState, 
   onProceedToInterview,
@@ -160,10 +161,10 @@ export default function TechnicalAssessmentView({
             <ChevronLeft className="w-3.5 h-3.5" /> Back to ATS Scanner
           </button>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-            MNC Technical Assessment
+            Technical Skill Assessment
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Proctored Code Runner & CS Fundamentals for <strong className="text-slate-900 dark:text-white">{activeDrive.company}</strong>
+            Proctored Code Runner & Technical Fundamentals for <strong className="text-slate-900 dark:text-white">{activeDrive.title || activeDrive.role}</strong> at {currentTenant?.name || 'Client Organization'}
           </p>
         </div>
 

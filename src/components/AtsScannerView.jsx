@@ -16,13 +16,14 @@ import {
   GraduationCap,
   Target
 } from 'lucide-react';
-import { MNC_JOB_DRIVES, BENCHMARK_RESUMES } from '../data/mockData';
+import { BENCHMARK_RESUMES } from '../data/mockData';
 import { scanResume } from '../utils/atsScanner';
 
 export default function AtsScannerView({ 
   isDark,
   activeDrive, 
   setActiveDrive, 
+  currentTenant,
   candidateState, 
   setCandidateState, 
   onProceedToTechnical,
@@ -85,17 +86,17 @@ export default function AtsScannerView({
             onClick={onBackToJobs}
             className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 flex items-center gap-1 mb-2 transition-colors cursor-pointer"
           >
-            <ChevronLeft className="w-3.5 h-3.5" /> Back to Campus Drives
+            <ChevronLeft className="w-3.5 h-3.5" /> Back to Job Openings
           </button>
           <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
             ATS Resume Intelligence
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Evaluating algorithmic match for <strong className="text-slate-900 dark:text-white">{activeDrive.company}</strong> ({activeDrive.role})
+            Evaluating algorithmic match for <strong className="text-slate-900 dark:text-white">{activeDrive.title || activeDrive.role}</strong> at {currentTenant?.name || 'Client Organization'}
           </p>
         </div>
 
-        {/* Minimal Drive Switcher */}
+        {/* Minimal Opening Switcher */}
         <div className={`flex items-center gap-2 px-3 py-2 rounded-2xl border transition-all ${
           isDark ? 'bg-slate-900/90 border-slate-700' : 'bg-white border-slate-200 shadow-xs'
         }`}>
@@ -103,14 +104,15 @@ export default function AtsScannerView({
           <select 
             value={activeDrive.id}
             onChange={(e) => {
-              const drive = MNC_JOB_DRIVES.find(d => d.id === e.target.value);
-              if (drive) setActiveDrive(drive);
+              const openings = currentTenant?.openings || [];
+              const selected = openings.find(d => d.id === e.target.value);
+              if (selected) setActiveDrive(selected);
             }}
             className="bg-transparent text-xs font-bold outline-none cursor-pointer text-slate-800 dark:text-slate-200"
           >
-            {MNC_JOB_DRIVES.map(drive => (
-              <option key={drive.id} value={drive.id} className="dark:bg-slate-900 dark:text-white">
-                {drive.company} ({drive.minAtsScore}% Cutoff)
+            {(currentTenant?.openings || []).map(opening => (
+              <option key={opening.id} value={opening.id} className="dark:bg-slate-900 dark:text-white">
+                {opening.title} ({opening.minAtsScore}% Cutoff)
               </option>
             ))}
           </select>
@@ -226,7 +228,7 @@ export default function AtsScannerView({
               </span>
               <h2 className="text-lg sm:text-xl font-black tracking-tight">ATS Evaluation & Heuristic Matrix</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                Target Cutoff: <strong className="text-slate-900 dark:text-white">{activeDrive.minAtsScore}%</strong> for {activeDrive.company}
+                Target Cutoff: <strong className="text-slate-900 dark:text-white">{activeDrive.minAtsScore}%</strong> for {activeDrive.title || activeDrive.role}
               </p>
             </div>
 
@@ -324,7 +326,7 @@ export default function AtsScannerView({
                   : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-300 dark:border-slate-700'
               }`}
             >
-              <span>{scanResult.passedCutoff ? 'Proceed to Phase 2: MNC Technical Assessment' : `Score Below Cutoff (${activeDrive.minAtsScore}%) — Update Resume`}</span>
+              <span>{scanResult.passedCutoff ? 'Proceed to Phase 2: Technical Assessment' : `Score Below Cutoff (${activeDrive.minAtsScore}%) — Update Resume`}</span>
               {scanResult.passedCutoff && <ArrowRight className="w-4 h-4" />}
             </button>
           </div>

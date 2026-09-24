@@ -10,7 +10,7 @@ import TpoDashboardView from './components/TpoDashboardView';
 import UserProfileModal from './components/UserProfileModal';
 import VivaDemoFab from './components/VivaDemoFab';
 import ClientConfigModal from './components/ClientConfigModal';
-import { MNC_JOB_DRIVES, BENCHMARK_RESUMES } from './data/mockData';
+import { BENCHMARK_RESUMES } from './data/mockData';
 import { CLIENT_TENANTS } from './data/tenantConfig';
 import { Cpu, ShieldCheck, Sparkles, Terminal, Activity, Building2, FileText, Code2, Bot, Award, AlertTriangle, RotateCcw } from 'lucide-react';
 
@@ -56,10 +56,20 @@ class ErrorBoundary extends React.Component {
 export default function App() {
   const [activeView, setActiveView] = useState('jobs');
   const [userRole, setUserRole] = useState('student');
-  const [activeDrive, setActiveDrive] = useState(MNC_JOB_DRIVES[0]);
+  const [currentTenant, setCurrentTenant] = useState(CLIENT_TENANTS.college_polytechnic);
+  const [activeDrive, setActiveDrive] = useState(CLIENT_TENANTS.college_polytechnic.openings[0]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [tenantModalOpen, setTenantModalOpen] = useState(false);
-  const [currentTenant, setCurrentTenant] = useState(CLIENT_TENANTS.college_polytechnic);
+
+  // Synchronize active position when switching client instances
+  useEffect(() => {
+    if (currentTenant?.openings?.length > 0) {
+      const exists = currentTenant.openings.some(o => o.id === activeDrive?.id);
+      if (!exists) {
+        setActiveDrive(currentTenant.openings[0]);
+      }
+    }
+  }, [currentTenant]);
 
   // Theme Management (Light by default, with rich mesh gradients & dark option)
   const [isDark, setIsDark] = useState(() => {
@@ -174,6 +184,7 @@ export default function App() {
                 isDark={isDark}
                 activeDrive={activeDrive}
                 setActiveDrive={setActiveDrive}
+                currentTenant={currentTenant}
                 candidateState={candidateState}
                 setCandidateState={setCandidateState}
                 onProceedToTechnical={handleProceedToTechnical}
@@ -183,6 +194,7 @@ export default function App() {
               <TechnicalAssessmentView
                 isDark={isDark}
                 activeDrive={activeDrive}
+                currentTenant={currentTenant}
                 candidateState={candidateState}
                 setCandidateState={setCandidateState}
                 onProceedToInterview={handleProceedToInterview}
@@ -192,6 +204,7 @@ export default function App() {
               <AiInterviewStudioView
                 isDark={isDark}
                 activeDrive={activeDrive}
+                currentTenant={currentTenant}
                 candidateState={candidateState}
                 setCandidateState={setCandidateState}
                 onProceedToDossier={handleProceedToDossier}
@@ -202,6 +215,7 @@ export default function App() {
                 isDark={isDark}
                 candidateState={candidateState}
                 activeDrive={activeDrive}
+                currentTenant={currentTenant}
                 onResetWorkflow={handleResetWorkflow}
                 onSwitchToTpo={() => {
                   setUserRole('tpo');
@@ -286,7 +300,7 @@ export default function App() {
               }`}
             >
               <Building2 className="w-4 h-4" />
-              <span>Drives</span>
+              <span>Openings</span>
             </button>
             <button
               onClick={() => setActiveView('ats')}

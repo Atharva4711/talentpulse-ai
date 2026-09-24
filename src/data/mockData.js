@@ -107,7 +107,7 @@ Campus Placement Portal | React, Node.js, Tailwind CSS, MongoDB
 - Automated resume parsing and eligibility filtering, cutting placement cell administrative processing time by 60%.
 
 ACHIEVEMENTS & CERTIFICATIONS
-- Secured Rank 412 out of 45,000+ participants in TCS CodeVita Season 12.
+- Secured Rank 412 out of 45,000+ participants in National Algorithmic Coding Challenge.
 - AWS Certified Cloud Practitioner (Validation ID: AWS-89234812).
 - LeetCode 500+ Questions Solved | Knight Badge (Top 4.2% globally).`
   },
@@ -299,9 +299,9 @@ export const INITIAL_TPO_CANDIDATES = [
   {
     id: 'cand-001',
     name: 'Aarav Sharma',
-    rollNo: '21CS042',
-    email: 'aarav.sharma.cs@college.edu',
-    driveApplied: 'Amazon SDE-1 (Campus Graduate)',
+    rollNo: 'EMP-APP-042',
+    email: 'aarav.sharma@gmail.com',
+    driveApplied: 'Lecturer in Information Technology',
     atsScore: 92,
     technicalScore: 95,
     interviewScore: 88,
@@ -322,9 +322,9 @@ export const INITIAL_TPO_CANDIDATES = [
   {
     id: 'cand-002',
     name: 'Priya Iyer',
-    rollNo: '21IT019',
-    email: 'priya.iyer@college.edu',
-    driveApplied: 'Nexus FinTech Global',
+    rollNo: 'EMP-APP-019',
+    email: 'priya.iyer@gmail.com',
+    driveApplied: 'Junior Software & ERP Developer',
     atsScore: 88,
     technicalScore: 90,
     interviewScore: 85,
@@ -345,9 +345,9 @@ export const INITIAL_TPO_CANDIDATES = [
   {
     id: 'cand-003',
     name: 'Rohan Verma',
-    rollNo: '21CS089',
-    email: 'rohan.verma@college.edu',
-    driveApplied: 'TCS Digital / Prime Systems Engineer',
+    rollNo: 'EMP-APP-089',
+    email: 'rohan.verma@gmail.com',
+    driveApplied: 'System Administrator & Network Engineer',
     atsScore: 68,
     technicalScore: 72,
     interviewScore: 64,
@@ -367,10 +367,10 @@ export const INITIAL_TPO_CANDIDATES = [
   },
   {
     id: 'cand-004',
-    name: 'Ananya Mukherjee',
-    rollNo: '21CS015',
-    email: 'ananya.m@college.edu',
-    driveApplied: 'Infosys Specialist Programmer',
+    name: 'Sneha Kulkarni',
+    rollNo: 'EMP-APP-015',
+    email: 'sneha.k@gmail.com',
+    driveApplied: 'Computer Lab Technical Assistant',
     atsScore: 84,
     technicalScore: 92,
     interviewScore: 79,
@@ -390,25 +390,74 @@ export const INITIAL_TPO_CANDIDATES = [
   },
   {
     id: 'cand-005',
-    name: 'Vikram Patel',
-    rollNo: '21ME102',
-    email: 'vikram.p@college.edu',
-    driveApplied: 'TCS Digital / Prime Systems Engineer',
-    atsScore: 41,
-    technicalScore: 48,
-    interviewScore: 50,
-    eyeContactRatio: 52,
-    speechWpm: 175,
+    name: 'Vikram Joshi',
+    rollNo: 'EMP-APP-104',
+    email: 'vikram.j@gmail.com',
+    driveApplied: 'Junior Software & ERP Developer',
+    atsScore: 46,
+    technicalScore: 50,
+    interviewScore: 52,
+    eyeContactRatio: 58,
+    speechWpm: 172,
     fillerWordsCount: 22,
     verdict: 'Needs Improvement',
-    status: 'Rejected',
+    status: 'Waitlisted',
     date: '2026-09-20',
     radarMetrics: {
-      atsMatch: 41,
-      technicalDepth: 48,
-      communicationClarity: 50,
-      eyeContactConfidence: 52,
+      atsMatch: 46,
+      technicalDepth: 50,
+      communicationClarity: 52,
+      eyeContactConfidence: 58,
       starMethodology: 45
+    }
+  }
+];
+
+export const CORPORATE_CANDIDATES = [
+  {
+    id: 'corp-001',
+    name: 'Aditya Nair',
+    rollNo: 'CORP-DEV-001',
+    email: 'aditya.nair@outlook.com',
+    driveApplied: 'Associate Software Engineer (Full Stack)',
+    atsScore: 94,
+    technicalScore: 96,
+    interviewScore: 91,
+    eyeContactRatio: 92,
+    speechWpm: 130,
+    fillerWordsCount: 2,
+    verdict: 'Strong Hire',
+    status: 'Shortlisted',
+    date: '2026-09-24',
+    radarMetrics: {
+      atsMatch: 94,
+      technicalDepth: 96,
+      communicationClarity: 91,
+      eyeContactConfidence: 92,
+      starMethodology: 93
+    }
+  },
+  {
+    id: 'corp-002',
+    name: 'Kavita Menon',
+    rollNo: 'CORP-DEV-002',
+    email: 'kavita.m@outlook.com',
+    driveApplied: 'Backend & Cloud Systems Engineer',
+    atsScore: 89,
+    technicalScore: 92,
+    interviewScore: 86,
+    eyeContactRatio: 88,
+    speechWpm: 138,
+    fillerWordsCount: 4,
+    verdict: 'Strong Hire',
+    status: 'Shortlisted',
+    date: '2026-09-23',
+    radarMetrics: {
+      atsMatch: 89,
+      technicalDepth: 92,
+      communicationClarity: 86,
+      eyeContactConfidence: 88,
+      starMethodology: 85
     }
   }
 ];
