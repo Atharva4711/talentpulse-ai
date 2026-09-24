@@ -132,9 +132,6 @@ export default function App() {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         
-        {/* Dynamic Campus Placement Ticker Bar */}
-        <PlacementTicker isDark={isDark} currentTenant={currentTenant} />
-
         {/* Global Navigation Header with Dual Personas, Profile & Client Config */}
         <Navbar
           activeView={activeView}

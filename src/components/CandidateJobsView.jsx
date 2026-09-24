@@ -7,12 +7,10 @@ import {
   CheckCircle2, 
   ArrowRight, 
   Sparkles, 
-  Layers,
   GraduationCap,
-  Users,
-  Calendar,
   Clock,
-  ExternalLink
+  ChevronRight,
+  ShieldCheck
 } from 'lucide-react';
 import { MNC_JOB_DRIVES } from '../data/mockData';
 
@@ -25,212 +23,169 @@ export default function CandidateJobsView({
   onOpenTenantConfig
 }) {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6 animate-in fade-in duration-300">
       
-      {/* Client Specific Organization Banner */}
-      <div className={`p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl border transition-all ${
-        isDark 
-          ? 'bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border-slate-800 text-white' 
-          : 'bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 border-indigo-700/40 text-white'
-      }`}>
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="flex flex-wrap items-center gap-2">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-indigo-200 text-xs font-semibold border border-white/15 shadow-xs">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-300 animate-spin-slow" /> 
-              <span>{currentTenant?.name || 'Government Polytechnic'} • Placement Division</span>
-            </div>
-            
-            <button
-              onClick={onOpenTenantConfig}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/20 hover:bg-indigo-500/30 backdrop-blur-md text-indigo-100 text-xs font-bold border border-indigo-400/30 transition-all cursor-pointer"
-            >
-              <span>{currentTenant?.clientType || 'Institutional Deployment'}</span>
-              <span className="text-[10px] opacity-75">⚙️ Switch Client</span>
-            </button>
-          </div>
-
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-            {currentTenant?.name || 'Government Polytechnic'} <br className="hidden sm:block"/>
-            <span className="bg-gradient-to-r from-indigo-200 via-sky-200 to-emerald-200 bg-clip-text text-transparent">
-              Campus Placement Intelligence
-            </span>
-          </h1>
-
-          <p className="text-sm sm:text-base text-indigo-100/90 leading-relaxed font-normal">
-            {currentTenant?.drivesNotice || 'Private Institutional Drives: Open exclusively to enrolled final year diploma candidates with TPO eligibility clearance.'}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-semibold text-indigo-200">
-            <span className="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-xl border border-white/10">
-              <Building2 className="w-3.5 h-3.5 text-indigo-300" /> {currentTenant?.stats?.activeDrives || 4} Approved Drives
-            </span>
-            <span className="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-xl border border-white/10">
-              <GraduationCap className="w-3.5 h-3.5 text-emerald-300" /> {currentTenant?.division || 'Dept of IT'}
-            </span>
-            <span className="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-xl border border-white/10">
-              <Clock className="w-3.5 h-3.5 text-amber-300" /> {currentTenant?.vendorBadge || 'Service Provider: Atharva Tech Solutions'}
-            </span>
-          </div>
+      {/* Sleek, Clean Institutional Header (No gigantic noisy banners!) */}
+      <div className="text-center sm:text-left space-y-2 pb-4 border-b border-slate-200 dark:border-slate-800">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+          <GraduationCap className="w-3.5 h-3.5" />
+          <span>{currentTenant?.name || 'Government Polytechnic Pune'} • Training & Placement Cell</span>
         </div>
-
-        {/* Ambient Decorative Background Glows */}
-        <div className="absolute right-0 top-0 -mt-10 -mr-10 w-96 h-96 bg-indigo-500/25 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute right-1/4 bottom-0 -mb-20 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl pointer-events-none" />
+        
+        <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
+          Campus Recruitment & Assessment Portal
+        </h1>
+        
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
+          Private institutional evaluation system for verified Diploma in IT candidates (Class of 2026).
+        </p>
       </div>
 
-      {/* Drives Grid Header */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+      {/* Single Focused Drive Card (No competing company clutter!) */}
+      <div className={`p-6 sm:p-8 rounded-3xl border shadow-xl transition-all ${
+        isDark ? 'glass-panel-dark' : 'glass-panel-light'
+      } space-y-6`}>
+        
+        {/* Drive Selector Bar */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-5 border-b border-slate-200/80 dark:border-slate-800">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight">
-              {currentTenant?.drivesHeader || 'Active Campus Placement Drives'}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              Private institutional selection for registered candidates of {currentTenant?.name || 'this college'}
-            </p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className={`text-xs font-bold px-3 py-1.5 rounded-full border ${
-              isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-white text-slate-700 border-slate-200 shadow-xs'
-            }`}>
-              {MNC_JOB_DRIVES.length} Recruitment Drives Open
+            <span className="text-[11px] font-black uppercase tracking-wider text-indigo-600 dark:text-indigo-400 block mb-0.5">
+              Scheduled Campus Drive
             </span>
+            <div className="text-xs text-slate-500 dark:text-slate-400">
+              Select the visiting company scheduled for your evaluation batch:
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <select
+              value={activeDrive.id}
+              onChange={(e) => {
+                const selected = MNC_JOB_DRIVES.find(d => d.id === e.target.value);
+                if (selected) setActiveDrive(selected);
+              }}
+              className={`px-3 py-2 rounded-xl text-xs font-bold border outline-none cursor-pointer ${
+                isDark 
+                  ? 'bg-slate-900 border-slate-700 text-slate-100 focus:border-indigo-500' 
+                  : 'bg-slate-50 border-slate-200 text-slate-800 focus:border-indigo-500'
+              }`}
+            >
+              {MNC_JOB_DRIVES.map(drive => (
+                <option key={drive.id} value={drive.id} className="dark:bg-slate-900 dark:text-white">
+                  {drive.company} — {drive.role.split('(')[0]} ({drive.ctc})
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
-        {/* Dynamic Drive Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {MNC_JOB_DRIVES.map((drive) => {
-            const isSelected = activeDrive.id === drive.id;
-
-            return (
-              <div 
-                key={drive.id}
-                onClick={() => setActiveDrive(drive)}
-                className={`p-6 sm:p-7 rounded-3xl border transition-all flex flex-col justify-between cursor-pointer ${
-                  isSelected 
-                    ? isDark 
-                      ? 'bg-slate-900/90 border-indigo-500 ring-2 ring-indigo-500/30 shadow-xl shadow-indigo-950/50' 
-                      : 'bg-white/95 border-indigo-500 ring-2 ring-indigo-500/20 shadow-xl shadow-indigo-950/10'
-                    : isDark
-                      ? 'glass-panel-interactive-dark'
-                      : 'glass-panel-interactive-light'
-                }`}
-              >
-                <div className="space-y-4">
-                  {/* Top Bar: Company Identity & Package */}
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="flex items-center gap-3.5">
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center p-3 shadow-md border ${
-                        isSelected 
-                          ? 'bg-gradient-to-tr from-indigo-600 to-purple-600 text-white border-transparent' 
-                          : isDark 
-                            ? 'bg-slate-800 text-indigo-400 border-slate-700' 
-                            : 'bg-indigo-50 text-indigo-600 border-indigo-100'
-                      }`}>
-                        <Building2 className="w-7 h-7" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                            drive.tier?.includes('Super') 
-                              ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' 
-                              : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
-                          }`}>
-                            {drive.tier}
-                          </span>
-                          <span className="text-xs text-slate-400">• Verified Drive</span>
-                        </div>
-                        <h3 className="text-lg sm:text-xl font-black tracking-tight mt-0.5">{drive.company}</h3>
-                        <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">{drive.role}</p>
-                      </div>
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      <span className="inline-block text-xs font-black px-3 py-1.5 rounded-xl bg-emerald-50 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs">
-                        {drive.ctc}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Description */}
-                  <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {drive.description}
-                  </p>
-
-                  {/* Badges / Location / Cutoff */}
-                  <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400 pt-1">
-                    <span className="flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-indigo-500" />
-                      <span>{drive.location}</span>
-                    </span>
-                    <span>•</span>
-                    <span className="flex items-center gap-1">
-                      <GraduationCap className="w-3.5 h-3.5 text-purple-500" />
-                      <span>Cutoff: {drive.minAtsScore || 65}% ATS</span>
-                    </span>
-                    <span>•</span>
-                    <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                      {drive.vacancies || '25+'} Positions
-                    </span>
-                  </div>
-
-                  {/* Required Tech Skills Pills */}
-                  <div className="pt-2">
-                    <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">
-                      Required Skill Stack
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {(drive.requiredHardSkills || []).map((skill, idx) => (
-                        <span 
-                          key={idx}
-                          className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
-                            isDark 
-                              ? 'bg-slate-800/90 text-slate-300 border border-slate-700' 
-                              : 'bg-slate-100 text-slate-700 border border-slate-200'
-                          }`}
-                        >
-                          {skill}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Card Action Footer */}
-                <div className="pt-6 mt-6 border-t border-slate-200/80 dark:border-slate-800 flex items-center justify-between">
-                  <div className="text-xs">
-                    {isSelected ? (
-                      <span className="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Selected for Evaluation
-                      </span>
-                    ) : (
-                      <span className="text-slate-500">Click to select drive</span>
-                    )}
-                  </div>
-
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setActiveDrive(drive);
-                      onApplyDrive();
-                    }}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer ${
-                      isSelected
-                        ? 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-indigo-600/25 hover:scale-105'
-                        : isDark
-                        ? 'bg-slate-800 hover:bg-slate-700 text-slate-200'
-                        : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700'
-                    }`}
-                  >
-                    <span>Apply & Screen ATS</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+        {/* Selected Drive Identity Card */}
+        <div className="space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-lg shadow-indigo-600/25 shrink-0">
+                <Building2 className="w-7 h-7" />
               </div>
-            );
-          })}
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
+                    {activeDrive.tier}
+                  </span>
+                  <span className="text-xs text-slate-400 font-semibold">• Approved Institutional Slot</span>
+                </div>
+                <h2 className="text-xl sm:text-2xl font-black tracking-tight mt-0.5">{activeDrive.company}</h2>
+                <p className="text-xs sm:text-sm font-semibold text-slate-600 dark:text-slate-300">{activeDrive.role}</p>
+              </div>
+            </div>
+
+            <div className="sm:text-right shrink-0">
+              <span className="text-xs font-bold text-slate-400 block uppercase">Placement CTC</span>
+              <span className="text-2xl sm:text-3xl font-black text-emerald-600 dark:text-emerald-400">{activeDrive.ctc}</span>
+            </div>
+          </div>
+
+          <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+            {activeDrive.description}
+          </p>
+
+          {/* Clean 3-Box Eligibility & Criteria Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className={`p-3.5 rounded-2xl border text-xs ${
+              isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <span className="text-slate-400 font-semibold block text-[10px] uppercase">Job Location</span>
+              <span className="font-bold text-slate-800 dark:text-slate-200 mt-0.5 block truncate">{activeDrive.location}</span>
+            </div>
+
+            <div className={`p-3.5 rounded-2xl border text-xs ${
+              isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <span className="text-slate-400 font-semibold block text-[10px] uppercase">ATS Cutoff</span>
+              <span className="font-bold text-indigo-600 dark:text-indigo-400 mt-0.5 block">{activeDrive.minAtsScore}% Minimum Match</span>
+            </div>
+
+            <div className={`p-3.5 rounded-2xl border text-xs ${
+              isDark ? 'bg-slate-800/40 border-slate-700' : 'bg-slate-50 border-slate-200'
+            }`}>
+              <span className="text-slate-400 font-semibold block text-[10px] uppercase">Candidate Eligibility</span>
+              <span className="font-bold text-emerald-600 dark:text-emerald-400 mt-0.5 block">Zero Active Backlogs</span>
+            </div>
+          </div>
+
+          {/* Key Required Skills (Clean & Minimal) */}
+          <div className="pt-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block mb-2">
+              Primary Skills Evaluated in this Drive
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {(activeDrive.requiredHardSkills || []).slice(0, 6).map((skill, idx) => (
+                <span 
+                  key={idx}
+                  className={`px-3 py-1 rounded-xl text-xs font-semibold ${
+                    isDark 
+                      ? 'bg-slate-800 text-slate-300 border border-slate-700' 
+                      : 'bg-white text-slate-700 border border-slate-200 shadow-2xs'
+                  }`}
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* 3-Round Assessment Pipeline Overview */}
+          <div className="pt-2 space-y-2">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              Evaluation Flow for this Drive
+            </span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-indigo-50/70 dark:bg-indigo-950/50 text-indigo-800 dark:text-indigo-300 font-semibold">
+                <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">1</span>
+                <span>ATS Resume Match</span>
+              </div>
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-purple-50/70 dark:bg-purple-950/50 text-purple-800 dark:text-purple-300 font-semibold">
+                <span className="w-5 h-5 rounded-full bg-purple-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">2</span>
+                <span>Technical Code Test</span>
+              </div>
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-emerald-50/70 dark:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 font-semibold">
+                <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold shrink-0">3</span>
+                <span>Multimodal AI HR</span>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Start Assessment CTA Button */}
+        <div className="pt-4 border-t border-slate-200/80 dark:border-slate-800">
+          <button
+            onClick={onApplyDrive}
+            className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-600/25 hover:scale-[1.01] transition-all cursor-pointer"
+          >
+            <span>Begin Evaluation: Step 1 ATS Resume Screen</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
       </div>
 
     </div>
