@@ -9,14 +9,57 @@ import CandidateDossierView from './components/CandidateDossierView';
 import TpoDashboardView from './components/TpoDashboardView';
 import UserProfileModal from './components/UserProfileModal';
 import VivaDemoFab from './components/VivaDemoFab';
+import ClientConfigModal from './components/ClientConfigModal';
 import { MNC_JOB_DRIVES, BENCHMARK_RESUMES } from './data/mockData';
-import { Cpu, ShieldCheck, Sparkles, Terminal, Activity, Building2, FileText, Code2, Bot, Award } from 'lucide-react';
+import { CLIENT_TENANTS } from './data/tenantConfig';
+import { Cpu, ShieldCheck, Sparkles, Terminal, Activity, Building2, FileText, Code2, Bot, Award, AlertTriangle, RotateCcw } from 'lucide-react';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    console.error('[TalentPulse ErrorBoundary caught error]:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="p-8 max-w-xl mx-auto my-12 rounded-3xl bg-red-50 dark:bg-slate-900 border border-red-200 dark:border-red-900 text-center space-y-4 shadow-xl">
+          <AlertTriangle className="w-12 h-12 text-red-500 mx-auto" />
+          <h2 className="text-xl font-bold text-red-900 dark:text-red-200">Something went wrong</h2>
+          <p className="text-xs text-red-700 dark:text-red-300 font-mono">
+            {this.state.error?.message || 'Unexpected application error.'}
+          </p>
+          <button
+            onClick={() => {
+              this.setState({ hasError: false, error: null });
+              window.location.reload();
+            }}
+            className="px-4 py-2 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-bold inline-flex items-center gap-2 cursor-pointer shadow-md"
+          >
+            <RotateCcw className="w-3.5 h-3.5" /> Reload Application
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 export default function App() {
   const [activeView, setActiveView] = useState('jobs');
   const [userRole, setUserRole] = useState('student');
   const [activeDrive, setActiveDrive] = useState(MNC_JOB_DRIVES[0]);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [tenantModalOpen, setTenantModalOpen] = useState(false);
+  const [currentTenant, setCurrentTenant] = useState(CLIENT_TENANTS.college_polytechnic);
 
   // Theme Management (Light by default, with rich mesh gradients & dark option)
   const [isDark, setIsDark] = useState(() => {
@@ -90,9 +133,9 @@ export default function App() {
       <div className="relative z-10 flex flex-col min-h-screen">
         
         {/* Dynamic Campus Placement Ticker Bar */}
-        <PlacementTicker isDark={isDark} />
+        <PlacementTicker isDark={isDark} currentTenant={currentTenant} />
 
-        {/* Global Navigation Header with Dual Personas & Profile */}
+        {/* Global Navigation Header with Dual Personas, Profile & Client Config */}
         <Navbar
           activeView={activeView}
           setActiveView={setActiveView}
@@ -103,66 +146,73 @@ export default function App() {
           isDark={isDark}
           toggleTheme={toggleTheme}
           onOpenProfile={() => setProfileOpen(true)}
+          currentTenant={currentTenant}
+          onOpenTenantConfig={() => setTenantModalOpen(true)}
         />
 
         {/* Main View Router */}
         <main className="flex-1 pb-20">
-          {userRole === 'tpo' || activeView.startsWith('tpo') ? (
-            <TpoDashboardView
-              isDark={isDark}
-              onSelectCandidate={() => setActiveView('dossier')}
-              onSwitchToStudent={() => {
-                setUserRole('student');
-                setActiveView('jobs');
-              }}
-            />
-          ) : activeView === 'jobs' ? (
-            <CandidateJobsView
-              isDark={isDark}
-              activeDrive={activeDrive}
-              setActiveDrive={setActiveDrive}
-              onApplyDrive={handleApplyDrive}
-            />
-          ) : activeView === 'ats' ? (
-            <AtsScannerView
-              isDark={isDark}
-              activeDrive={activeDrive}
-              setActiveDrive={setActiveDrive}
-              candidateState={candidateState}
-              setCandidateState={setCandidateState}
-              onProceedToTechnical={handleProceedToTechnical}
-              onBackToJobs={() => setActiveView('jobs')}
-            />
-          ) : activeView === 'technical' ? (
-            <TechnicalAssessmentView
-              isDark={isDark}
-              activeDrive={activeDrive}
-              candidateState={candidateState}
-              setCandidateState={setCandidateState}
-              onProceedToInterview={handleProceedToInterview}
-              onBackToAts={() => setActiveView('ats')}
-            />
-          ) : activeView === 'interview' ? (
-            <AiInterviewStudioView
-              isDark={isDark}
-              activeDrive={activeDrive}
-              candidateState={candidateState}
-              setCandidateState={setCandidateState}
-              onProceedToDossier={handleProceedToDossier}
-              onBackToTechnical={() => setActiveView('technical')}
-            />
-          ) : (
-            <CandidateDossierView
-              isDark={isDark}
-              candidateState={candidateState}
-              activeDrive={activeDrive}
-              onResetWorkflow={handleResetWorkflow}
-              onSwitchToTpo={() => {
-                setUserRole('tpo');
-                setActiveView('tpo-dashboard');
-              }}
-            />
-          )}
+          <ErrorBoundary>
+            {userRole === 'tpo' || activeView.startsWith('tpo') ? (
+              <TpoDashboardView
+                isDark={isDark}
+                currentTenant={currentTenant}
+                onSelectCandidate={() => setActiveView('dossier')}
+                onSwitchToStudent={() => {
+                  setUserRole('student');
+                  setActiveView('jobs');
+                }}
+              />
+            ) : activeView === 'jobs' ? (
+              <CandidateJobsView
+                isDark={isDark}
+                currentTenant={currentTenant}
+                activeDrive={activeDrive}
+                setActiveDrive={setActiveDrive}
+                onApplyDrive={handleApplyDrive}
+                onOpenTenantConfig={() => setTenantModalOpen(true)}
+              />
+            ) : activeView === 'ats' ? (
+              <AtsScannerView
+                isDark={isDark}
+                activeDrive={activeDrive}
+                setActiveDrive={setActiveDrive}
+                candidateState={candidateState}
+                setCandidateState={setCandidateState}
+                onProceedToTechnical={handleProceedToTechnical}
+                onBackToJobs={() => setActiveView('jobs')}
+              />
+            ) : activeView === 'technical' ? (
+              <TechnicalAssessmentView
+                isDark={isDark}
+                activeDrive={activeDrive}
+                candidateState={candidateState}
+                setCandidateState={setCandidateState}
+                onProceedToInterview={handleProceedToInterview}
+                onBackToAts={() => setActiveView('ats')}
+              />
+            ) : activeView === 'interview' ? (
+              <AiInterviewStudioView
+                isDark={isDark}
+                activeDrive={activeDrive}
+                candidateState={candidateState}
+                setCandidateState={setCandidateState}
+                onProceedToDossier={handleProceedToDossier}
+                onBackToTechnical={() => setActiveView('technical')}
+              />
+            ) : (
+              <CandidateDossierView
+                isDark={isDark}
+                candidateState={candidateState}
+                activeDrive={activeDrive}
+                onResetWorkflow={handleResetWorkflow}
+                onSwitchToTpo={() => {
+                  setUserRole('tpo');
+                  setActiveView('tpo-dashboard');
+                }}
+              />
+            )}
+          </ErrorBoundary>
         </main>
 
         {/* User Profile Modal */}
@@ -173,6 +223,16 @@ export default function App() {
           candidateState={candidateState}
           userRole={userRole}
           setUserRole={setUserRole}
+          currentTenant={currentTenant}
+        />
+
+        {/* B2B Client Tenant Configurator Modal */}
+        <ClientConfigModal
+          isOpen={tenantModalOpen}
+          onClose={() => setTenantModalOpen(false)}
+          isDark={isDark}
+          currentTenant={currentTenant}
+          setCurrentTenant={setCurrentTenant}
         />
 
         {/* Examiner Viva Voce Demonstration Floating Controller */}

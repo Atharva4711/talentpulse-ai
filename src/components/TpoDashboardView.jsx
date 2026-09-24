@@ -18,7 +18,7 @@ import {
 } from 'lucide-react';
 import { INITIAL_TPO_CANDIDATES, MNC_JOB_DRIVES } from '../data/mockData';
 
-export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchToStudent }) {
+export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchToStudent, currentTenant }) {
   const [candidates, setCandidates] = useState(INITIAL_TPO_CANDIDATES);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDriveFilter, setSelectedDriveFilter] = useState('All');
@@ -60,7 +60,7 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `TPO_Placement_Report_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute('download', `${(currentTenant?.name || 'TPO').replace(/\s+/g, '_')}_Placement_Report.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -78,14 +78,14 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight">
-              TPO Placement Command Center
+              {currentTenant?.tpoTitle || 'TPO Placement Command Center'}
             </h1>
             <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
-              Recruiter Mode
+              Institutional Admin
             </span>
           </div>
           <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Real-time candidate pipeline, multimodal assessment analytics, and corporate CSV export
+            Private Institutional Pipeline for <strong className="text-slate-900 dark:text-white">{currentTenant?.name || 'Government Polytechnic'}</strong> • {currentTenant?.division || 'Dept of IT'}
           </p>
         </div>
 

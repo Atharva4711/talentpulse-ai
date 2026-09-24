@@ -16,42 +16,59 @@ import {
 } from 'lucide-react';
 import { MNC_JOB_DRIVES } from '../data/mockData';
 
-export default function CandidateJobsView({ isDark, activeDrive, setActiveDrive, onApplyDrive }) {
+export default function CandidateJobsView({ 
+  isDark, 
+  activeDrive, 
+  setActiveDrive, 
+  onApplyDrive,
+  currentTenant,
+  onOpenTenantConfig
+}) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 animate-in fade-in duration-300">
       
-      {/* Radiant Hero Banner */}
+      {/* Client Specific Organization Banner */}
       <div className={`p-8 sm:p-10 rounded-3xl relative overflow-hidden shadow-2xl border transition-all ${
         isDark 
           ? 'bg-gradient-to-br from-indigo-950 via-slate-900 to-slate-950 border-slate-800 text-white' 
           : 'bg-gradient-to-br from-indigo-900 via-indigo-800 to-purple-900 border-indigo-700/40 text-white'
       }`}>
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-indigo-200 text-xs font-semibold border border-white/15 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-300 animate-spin-slow" /> 
-            <span>Placement Season 2026 • Final Year Diploma in IT</span>
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-indigo-200 text-xs font-semibold border border-white/15 shadow-xs">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-300 animate-spin-slow" /> 
+              <span>{currentTenant?.name || 'Government Polytechnic'} • Placement Division</span>
+            </div>
+            
+            <button
+              onClick={onOpenTenantConfig}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-indigo-500/20 hover:bg-indigo-500/30 backdrop-blur-md text-indigo-100 text-xs font-bold border border-indigo-400/30 transition-all cursor-pointer"
+            >
+              <span>{currentTenant?.clientType || 'Institutional Deployment'}</span>
+              <span className="text-[10px] opacity-75">⚙️ Switch Client</span>
+            </button>
           </div>
 
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight">
-            Campus Recruitment & <br className="hidden sm:block"/>
+            {currentTenant?.name || 'Government Polytechnic'} <br className="hidden sm:block"/>
             <span className="bg-gradient-to-r from-indigo-200 via-sky-200 to-emerald-200 bg-clip-text text-transparent">
-              AI Interview Intelligence
+              Campus Placement Intelligence
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-indigo-100/90 leading-relaxed font-normal">
-            Welcome, Diploma Candidate! Select an active campus recruitment drive below to screen your resume through our Industry ATS Heuristic Engine, pass the algorithmic technical assessment, and undergo your real-time multimodal AI HR interview.
+            {currentTenant?.drivesNotice || 'Private Institutional Drives: Open exclusively to enrolled final year diploma candidates with TPO eligibility clearance.'}
           </p>
 
           <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-semibold text-indigo-200">
-            <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl border border-white/10">
-              <Building2 className="w-3.5 h-3.5 text-indigo-300" /> 42 Verified Visiting MNCs
+            <span className="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-xl border border-white/10">
+              <Building2 className="w-3.5 h-3.5 text-indigo-300" /> {currentTenant?.stats?.activeDrives || 4} Approved Drives
             </span>
-            <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl border border-white/10">
-              <GraduationCap className="w-3.5 h-3.5 text-emerald-300" /> TPO Approved Eligibility
+            <span className="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-xl border border-white/10">
+              <GraduationCap className="w-3.5 h-3.5 text-emerald-300" /> {currentTenant?.division || 'Dept of IT'}
             </span>
-            <span className="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-xl border border-white/10">
-              <Clock className="w-3.5 h-3.5 text-amber-300" /> Active Hiring Window
+            <span className="flex items-center gap-1.5 bg-black/25 px-3 py-1.5 rounded-xl border border-white/10">
+              <Clock className="w-3.5 h-3.5 text-amber-300" /> {currentTenant?.vendorBadge || 'Service Provider: Atharva Tech Solutions'}
             </span>
           </div>
         </div>
@@ -65,9 +82,11 @@ export default function CandidateJobsView({ isDark, activeDrive, setActiveDrive,
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <h2 className="text-xl sm:text-2xl font-black tracking-tight">Active Campus Placement Drives</h2>
+            <h2 className="text-xl sm:text-2xl font-black tracking-tight">
+              {currentTenant?.drivesHeader || 'Active Campus Placement Drives'}
+            </h2>
             <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
-              Select a visiting corporate recruiter to begin your progressive evaluation pipeline
+              Private institutional selection for registered candidates of {currentTenant?.name || 'this college'}
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -114,7 +133,7 @@ export default function CandidateJobsView({ isDark, activeDrive, setActiveDrive,
                       <div>
                         <div className="flex items-center gap-2">
                           <span className={`text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md ${
-                            drive.tier.includes('Super') 
+                            drive.tier?.includes('Super') 
                               ? 'bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300' 
                               : 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300'
                           }`}>
@@ -148,11 +167,11 @@ export default function CandidateJobsView({ isDark, activeDrive, setActiveDrive,
                     <span>•</span>
                     <span className="flex items-center gap-1">
                       <GraduationCap className="w-3.5 h-3.5 text-purple-500" />
-                      <span>Cutoff: {drive.minScore}% Agg</span>
+                      <span>Cutoff: {drive.minAtsScore || 65}% ATS</span>
                     </span>
                     <span>•</span>
                     <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                      {drive.vacancies} Positions
+                      {drive.vacancies || '25+'} Positions
                     </span>
                   </div>
 
@@ -162,7 +181,7 @@ export default function CandidateJobsView({ isDark, activeDrive, setActiveDrive,
                       Required Skill Stack
                     </span>
                     <div className="flex flex-wrap gap-1.5">
-                      {drive.skillsRequired.map((skill, idx) => (
+                      {(drive.requiredHardSkills || []).map((skill, idx) => (
                         <span 
                           key={idx}
                           className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${

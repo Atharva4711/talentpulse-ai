@@ -1,13 +1,13 @@
 import React from 'react';
 import { Sparkles, Building2, TrendingUp, Award, Clock } from 'lucide-react';
 
-export default function PlacementTicker({ isDark }) {
+export default function PlacementTicker({ isDark, currentTenant }) {
   const tickerItems = [
-    { icon: Sparkles, text: "2026 Diploma Campus Placement Season Live", highlight: "Active" },
-    { icon: Building2, text: "42 Visiting Tech MNCs (TCS Digital, Amazon, Infosys, Tech Mahindra)", highlight: "42 MNCs" },
-    { icon: TrendingUp, text: "318 Total Placement Offers Extended | Highest Package: ₹28 LPA", highlight: "₹28 LPA" },
-    { icon: Award, text: "TCS Digital Cutoff: 70% Diploma Aggregate & Zero Backlogs", highlight: "Verified" },
-    { icon: Clock, text: "Next Assessment Window: Amazon SDE-1 Registration Closes in 48h", highlight: "Urgent" }
+    { icon: Sparkles, text: `${currentTenant?.name || 'Government Polytechnic'} Placement Season 2026 Active`, highlight: "Verified Client" },
+    { icon: Building2, text: `${currentTenant?.stats?.activeDrives || 4} Visiting Tech MNCs Approved for Campus Drive`, highlight: "Approved" },
+    { icon: TrendingUp, text: `${currentTenant?.stats?.offersSecured || 48} Offers Rolled | Highest CTC: ${currentTenant?.stats?.highestPackage || '₹28 LPA'}`, highlight: "Top Package" },
+    { icon: Award, text: `TPO Eligibility: Minimum 65% Aggregate & Zero Active Backlogs`, highlight: "Cutoff" },
+    { icon: Clock, text: `Service Provider: Atharva Tech Solutions (Isolated Tenant)`, highlight: "Private SLA" }
   ];
 
   return (

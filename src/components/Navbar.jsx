@@ -25,7 +25,9 @@ export default function Navbar({
   candidateState,
   isDark,
   toggleTheme,
-  onOpenProfile
+  onOpenProfile,
+  currentTenant,
+  onOpenTenantConfig
 }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isCandidate = userRole === 'student';
@@ -48,26 +50,47 @@ export default function Navbar({
         <div className="flex items-center justify-between h-16">
           
           {/* Logo & Brand Identity */}
-          <div 
-            className="flex items-center gap-3 cursor-pointer group" 
-            onClick={() => setActiveView(isCandidate ? 'jobs' : 'tpo-dashboard')}
-          >
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-600/30 text-white group-hover:scale-105 transition-all">
-              <Activity className="w-5 h-5 stroke-[2.4]" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-lg font-extrabold tracking-tight">
-                  TalentPulse <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">AI</span>
-                </span>
-                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                  v2.0
-                </span>
+          <div className="flex items-center gap-3">
+            <div 
+              className="flex items-center gap-3 cursor-pointer group" 
+              onClick={() => setActiveView(isCandidate ? 'jobs' : 'tpo-dashboard')}
+            >
+              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-emerald-500 flex items-center justify-center shadow-lg shadow-indigo-600/30 text-white group-hover:scale-105 transition-all">
+                <Activity className="w-5 h-5 stroke-[2.4]" />
               </div>
-              <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
-                Campus Recruitment & Interview Intelligence
-              </p>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="text-lg font-extrabold tracking-tight">
+                    TalentPulse <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">AI</span>
+                  </span>
+                  <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-md bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                    v2.0
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">
+                  Client-Specific B2B Recruitment Suite
+                </p>
+              </div>
             </div>
+
+            {/* Active Client Organization Badge (Multi-Tenant Selector) */}
+            {currentTenant && (
+              <button
+                onClick={onOpenTenantConfig}
+                className={`hidden xl:flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ml-2 ${
+                  isDark 
+                    ? 'bg-slate-900 border-slate-700 text-indigo-300 hover:border-indigo-500' 
+                    : 'bg-indigo-50/80 border-indigo-200 text-indigo-800 hover:border-indigo-400 shadow-2xs'
+                }`}
+                title="Click to switch or configure client instance"
+              >
+                <Building2 className="w-3.5 h-3.5 text-indigo-500" />
+                <span className="truncate max-w-[200px]">{currentTenant.name}</span>
+                <span className="text-[10px] px-1.5 py-0.2 rounded bg-indigo-200/60 dark:bg-indigo-900 text-indigo-800 dark:text-indigo-200 font-black">
+                  Client Instance
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Stepper Navigation (Desktop) */}
