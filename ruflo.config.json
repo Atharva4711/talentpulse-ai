@@ -1,0 +1,60 @@
+{
+  "$schema": "https://raw.githubusercontent.com/ruvnet/ruflo/main/schema.json",
+  "project": "AutoHire AI — Campus Placement & Interview Intelligence Platform",
+  "version": "1.0.0",
+  "orchestrator": {
+    "name": "AutoHire-WarRoom-Lead",
+    "strategy": "hierarchical-collaborative",
+    "maxConcurrency": 4,
+    "memory": {
+      "type": "epistemic-episodic",
+      "persistPath": "./.ruflo/memory"
+    }
+  },
+  "agents": [
+    {
+      "id": "agent-architect",
+      "name": "The Architect",
+      "role": "System Architecture & Logic Engine",
+      "responsibilities": [
+        "ATS resume parsing and keyword similarity computation",
+        "MNC tiered technical question assessment scoring",
+        "State consistency and candidate placement pipeline transitions",
+        "Deterministic local fallback simulation engine"
+      ],
+      "tools": ["node-runtime", "nlp-tokenizer", "code-runner"]
+    },
+    {
+      "id": "agent-designer",
+      "name": "The Designer",
+      "role": "UX/UI & Multimodal Presentation Lead",
+      "responsibilities": [
+        "Cyber-Corporate Obsidian design system & glassmorphism",
+        "Animated humanoid AI interviewer avatar and reactive audio waveform",
+        "Live Computer Vision HUD overlay (eye-contact crosshair, sentiment badge, posture index)",
+        "TPO analytics dashboard & printable student diagnostic dossier"
+      ],
+      "tools": ["tailwind-v4", "lucide-icons", "canvas-api", "web-audio-api"]
+    },
+    {
+      "id": "agent-debugger",
+      "name": "The Debugger / Automated QA",
+      "role": "Quality Assurance & Real-Time Verification",
+      "responsibilities": [
+        "Tab-switching and proctoring event monitor",
+        "Browser subagent automated end-to-end user journey tests",
+        "Audio/Video permission handling and zero-crash fault tolerance",
+        "Console error trapping and build validation"
+      ],
+      "tools": ["chrome-devtools", "browser-subagent", "oxlint", "vite-build"]
+    }
+  ],
+  "pipelines": {
+    "campus-placement-funnel": [
+      { "step": 1, "name": "ATS Screening", "agent": "agent-architect", "cutoffScore": 60 },
+      { "step": 2, "name": "MNC Technical Round", "agent": "agent-architect", "cutoffScore": 65 },
+      { "step": 3, "name": "Multimodal HR Interview", "agent": "agent-designer", "multimodal": true },
+      { "step": 4, "name": "Final Dossier & TPO Shortlist", "agent": "agent-debugger", "autoExport": true }
+    ]
+  }
+}
