@@ -10,6 +10,7 @@ import TpoDashboardView from './components/TpoDashboardView';
 import UserProfileModal from './components/UserProfileModal';
 import VivaDemoFab from './components/VivaDemoFab';
 import ClientConfigModal from './components/ClientConfigModal';
+import CloudAiStudioModal from './components/CloudAiStudioModal';
 import { BENCHMARK_RESUMES } from './data/mockData';
 import { CLIENT_TENANTS } from './data/tenantConfig';
 import { Cpu, ShieldCheck, Sparkles, Terminal, Activity, Building2, FileText, Code2, Bot, Award, AlertTriangle, RotateCcw } from 'lucide-react';
@@ -60,16 +61,67 @@ export default function App() {
   const [activeDrive, setActiveDrive] = useState(CLIENT_TENANTS.college_polytechnic.openings[0]);
   const [profileOpen, setProfileOpen] = useState(false);
   const [tenantModalOpen, setTenantModalOpen] = useState(false);
+  const [cloudModalOpen, setCloudModalOpen] = useState(false);
 
-  // Synchronize active position when switching client instances
+  // Dynamic Tenant Openings State (Merges default openings + user-created openings from localStorage)
+  const [customOpenings, setCustomOpenings] = useState(() => {
+    try {
+      const saved = localStorage.getItem('talentpulse_custom_openings');
+      return saved ? JSON.parse(saved) : { college_polytechnic: [], corporate_tech: [] };
+    } catch {
+      return { college_polytechnic: [], corporate_tech: [] };
+    }
+  });
+
+  // Calculate current active tenant with merged openings
+  const baseTenant = CLIENT_TENANTS[currentTenant.id] || currentTenant;
+  const tenantCustomList = customOpenings[currentTenant.id] || [];
+  const mergedOpenings = [...(baseTenant.openings || []), ...tenantCustomList];
+
+  const enrichedTenant = {
+    ...baseTenant,
+    openings: mergedOpenings,
+    openingsCountLabel: `${mergedOpenings.length} Active Positions`
+  };
+
+  const handleAddOpening = async (newOpening) => {
+    const tenantId = currentTenant.id;
+    setCustomOpenings(prev => {
+      const existing = prev[tenantId] || [];
+      const updatedList = [newOpening, ...existing];
+      const nextState = { ...prev, [tenantId]: updatedList };
+      localStorage.setItem('talentpulse_custom_openings', JSON.stringify(nextState));
+      return nextState;
+    });
+
+    // Auto-select the newly created opening
+    setActiveDrive(newOpening);
+
+    // Sync with FastAPI microservice backend if running (:8000)
+    try {
+      await fetch('http://127.0.0.1:8000/api/openings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...newOpening,
+          tenant_id: tenantId
+        })
+      });
+      console.log('[FastAPI Openings Sync]: Successfully persisted to SQLite backend');
+    } catch {
+      // Local state is already persisted in localStorage
+    }
+  };
+
+  // Synchronize active position when switching client instances or openings update
   useEffect(() => {
-    if (currentTenant?.openings?.length > 0) {
-      const exists = currentTenant.openings.some(o => o.id === activeDrive?.id);
+    if (enrichedTenant?.openings?.length > 0) {
+      const exists = enrichedTenant.openings.some(o => o.id === activeDrive?.id);
       if (!exists) {
-        setActiveDrive(currentTenant.openings[0]);
+        setActiveDrive(enrichedTenant.openings[0]);
       }
     }
-  }, [currentTenant]);
+  }, [currentTenant.id, customOpenings]);
 
   // Theme Management (Light by default, with rich mesh gradients & dark option)
   const [isDark, setIsDark] = useState(() => {
@@ -153,8 +205,9 @@ export default function App() {
           isDark={isDark}
           toggleTheme={toggleTheme}
           onOpenProfile={() => setProfileOpen(true)}
-          currentTenant={currentTenant}
+          currentTenant={enrichedTenant}
           onOpenTenantConfig={() => setTenantModalOpen(true)}
+          onOpenCloudAi={() => setCloudModalOpen(true)}
         />
 
         {/* Main View Router */}
@@ -163,17 +216,19 @@ export default function App() {
             {userRole === 'tpo' || activeView.startsWith('tpo') ? (
               <TpoDashboardView
                 isDark={isDark}
-                currentTenant={currentTenant}
+                currentTenant={enrichedTenant}
                 onSelectCandidate={() => setActiveView('dossier')}
                 onSwitchToStudent={() => {
                   setUserRole('student');
                   setActiveView('jobs');
                 }}
+                onAddOpening={handleAddOpening}
+                onOpenCloudAi={() => setCloudModalOpen(true)}
               />
             ) : activeView === 'jobs' ? (
               <CandidateJobsView
                 isDark={isDark}
-                currentTenant={currentTenant}
+                currentTenant={enrichedTenant}
                 activeDrive={activeDrive}
                 setActiveDrive={setActiveDrive}
                 onApplyDrive={handleApplyDrive}
@@ -184,7 +239,7 @@ export default function App() {
                 isDark={isDark}
                 activeDrive={activeDrive}
                 setActiveDrive={setActiveDrive}
-                currentTenant={currentTenant}
+                currentTenant={enrichedTenant}
                 candidateState={candidateState}
                 setCandidateState={setCandidateState}
                 onProceedToTechnical={handleProceedToTechnical}
@@ -194,7 +249,7 @@ export default function App() {
               <TechnicalAssessmentView
                 isDark={isDark}
                 activeDrive={activeDrive}
-                currentTenant={currentTenant}
+                currentTenant={enrichedTenant}
                 candidateState={candidateState}
                 setCandidateState={setCandidateState}
                 onProceedToInterview={handleProceedToInterview}
@@ -204,7 +259,7 @@ export default function App() {
               <AiInterviewStudioView
                 isDark={isDark}
                 activeDrive={activeDrive}
-                currentTenant={currentTenant}
+                currentTenant={enrichedTenant}
                 candidateState={candidateState}
                 setCandidateState={setCandidateState}
                 onProceedToDossier={handleProceedToDossier}
@@ -215,7 +270,7 @@ export default function App() {
                 isDark={isDark}
                 candidateState={candidateState}
                 activeDrive={activeDrive}
-                currentTenant={currentTenant}
+                currentTenant={enrichedTenant}
                 onResetWorkflow={handleResetWorkflow}
                 onSwitchToTpo={() => {
                   setUserRole('tpo');
@@ -234,7 +289,7 @@ export default function App() {
           candidateState={candidateState}
           userRole={userRole}
           setUserRole={setUserRole}
-          currentTenant={currentTenant}
+          currentTenant={enrichedTenant}
         />
 
         {/* B2B Client Tenant Configurator Modal */}
@@ -242,8 +297,15 @@ export default function App() {
           isOpen={tenantModalOpen}
           onClose={() => setTenantModalOpen(false)}
           isDark={isDark}
-          currentTenant={currentTenant}
+          currentTenant={enrichedTenant}
           setCurrentTenant={setCurrentTenant}
+        />
+
+        {/* Cloud Database & In-House AI Model Studio Modal */}
+        <CloudAiStudioModal
+          isOpen={cloudModalOpen}
+          onClose={() => setCloudModalOpen(false)}
+          isDark={isDark}
         />
 
         {/* Examiner Viva Voce Demonstration Floating Controller */}
@@ -252,6 +314,7 @@ export default function App() {
           candidateState={candidateState}
           setCandidateState={setCandidateState}
           setActiveView={setActiveView}
+          onOpenCloudAi={() => setCloudModalOpen(true)}
         />
 
         {/* Capstone System Status Footer */}

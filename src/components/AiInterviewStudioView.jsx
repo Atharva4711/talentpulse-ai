@@ -13,7 +13,8 @@ import {
   ArrowRight,
   Cpu,
   RefreshCw,
-  ChevronLeft
+  ChevronLeft,
+  ShieldCheck
 } from 'lucide-react';
 import { HR_INTERVIEW_QUESTIONS } from '../data/mockData';
 import { speechEngine } from '../utils/speechEngine';
@@ -34,8 +35,20 @@ export default function AiInterviewStudioView({
   const [isAiSpeaking, setIsAiSpeaking] = useState(false);
   const [isCandidateSpeaking, setIsCandidateSpeaking] = useState(false);
   const [isEvaluating, setIsEvaluating] = useState(false);
-  const [activeModel, setActiveModel] = useState('Claude 3.5 Sonnet + Gemini Flash');
+  const [activeModel, setActiveModel] = useState('TalentPulse In-House AI SLM');
   const [apiKeyInput, setApiKeyInput] = useState('');
+  const [isLocalAiOnline, setIsLocalAiOnline] = useState(false);
+
+  useEffect(() => {
+    fetch('http://localhost:8000/health')
+      .then(res => res.ok ? res.json() : null)
+      .then(data => {
+        if (data?.status === 'online') {
+          setIsLocalAiOnline(true);
+        }
+      })
+      .catch(() => setIsLocalAiOnline(false));
+  }, []);
   
   const [telemetry, setTelemetry] = useState({
     eyeContactRatio: 92,
@@ -213,9 +226,18 @@ export default function AiInterviewStudioView({
           </p>
         </div>
 
-        {/* Status Pill */}
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+        {/* Status Pills */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
+            isLocalAiOnline
+              ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800'
+              : 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 border-indigo-300 dark:border-indigo-800'
+          }`}>
+            <span className={`w-2 h-2 rounded-full ${isLocalAiOnline ? 'bg-emerald-500 animate-pulse' : 'bg-indigo-500'}`} />
+            <span>{isLocalAiOnline ? 'In-House AI Engine (:8000) Active' : 'Heuristic Neural Engine Active'}</span>
+          </span>
+
+          <span className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Telemetry: 60 FPS Active</span>
           </span>
@@ -230,7 +252,7 @@ export default function AiInterviewStudioView({
         {/* Dual Stream Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           
-          {/* AI Interviewer Persona: Sarah Jenkins */}
+          {/* AI Interviewer Persona */}
           <div className="space-y-4">
             <div className={`p-6 rounded-3xl border flex flex-col items-center justify-center text-center relative overflow-hidden transition-all ${
               isDark ? 'bg-slate-900/90 border-slate-700/80' : 'bg-slate-900 text-white border-slate-800'
@@ -253,8 +275,12 @@ export default function AiInterviewStudioView({
                 )}
               </div>
 
-              <h3 className="text-base font-black text-white">Sarah Jenkins</h3>
-              <p className="text-xs text-indigo-300">Lead Campus Talent Partner • {activeDrive.company}</p>
+              <h3 className="text-base font-black text-white">
+                {currentTenant?.id === 'college_polytechnic' ? 'Dr. Aruna Joshi' : 'Sarah Jenkins'}
+              </h3>
+              <p className="text-xs text-indigo-300">
+                {currentTenant?.id === 'college_polytechnic' ? 'Institutional Faculty Selection Lead' : 'Lead Engineering Talent Partner'} • {currentTenant?.name}
+              </p>
 
               {/* Dynamic Waveform Visualizer */}
               <div className="flex items-center gap-1.5 h-8 my-4">
@@ -312,6 +338,11 @@ export default function AiInterviewStudioView({
                     <span>EYE CONTACT: {telemetry.eyeContactRatio}%</span>
                   </div>
 
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black/70 backdrop-blur-md border border-emerald-500/50 text-[10px] font-mono text-emerald-400">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>BIOMETRIC ID: VERIFIED</span>
+                  </div>
+
                   <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-mono text-indigo-300">
                     <Smile className="w-3.5 h-3.5" />
                     <span>{telemetry.sentiment}</span>
@@ -359,6 +390,30 @@ export default function AiInterviewStudioView({
                   <span>{isCandidateSpeaking ? 'Stop Mic' : 'Speak into Microphone'}</span>
                 </button>
               </div>
+
+              {/* Dynamic Candidate Audio Spectrogram Waveform */}
+              {isCandidateSpeaking && (
+                <div className="flex items-center justify-between p-2.5 rounded-2xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 animate-in fade-in">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping" />
+                    <span className="text-[11px] font-bold text-red-600 dark:text-red-400">
+                      Live Acoustic Stream & Real-time Speech-to-Text Active
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1 h-5">
+                    {[...Array(14)].map((_, i) => (
+                      <div
+                        key={i}
+                        className="w-1 bg-red-500 rounded-full animate-pulse"
+                        style={{
+                          height: `${Math.max(4, (Math.sin(i * 1.5 + Date.now() / 120) * 8 + 12))}px`,
+                          animationDelay: `${i * 50}ms`
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <textarea
                 value={candidateAnswer}

@@ -65,3 +65,10 @@ Split complex implementation tasks across three distinct internal roles:
    - Route AI requests through a unified gateway client adapter (`src/utils/aiGateway.js`).
    - Always maintain a quota-aware fallback cascade: Primary LLM API (Gemini/OpenAI) → Secondary LLM → Deterministic Local Heuristic Simulator.
    - Never introduce heavy server-side UI packages into the client-side bundle.
+
+---
+
+## ⚡ Step 6: Autonomous Execution Protocol ("Accept All Changes")
+1. **Zero Repeated Questions**: The USER has globally authorized and accepted all architectural, styling, and engineering changes.
+2. **Proactive Self-Direction**: Never interrupt or block the user with `ask_question` or permission checks. Make the optimal technical and aesthetic decisions autonomously.
+3. **Continuous End-to-End Delivery**: Complete the implementation, verify builds, test the browser interface, and commit work directly without halting.

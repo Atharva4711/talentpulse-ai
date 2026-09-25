@@ -17,6 +17,7 @@ import {
   Building2
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import OfficialLetterModal from './OfficialLetterModal';
 
 export default function CandidateDossierView({ 
   isDark,
@@ -26,6 +27,8 @@ export default function CandidateDossierView({
   onResetWorkflow,
   onSwitchToTpo 
 }) {
+  const [showLetterModal, setShowLetterModal] = React.useState(false);
+
   React.useEffect(() => {
     try {
       confetti({
@@ -112,7 +115,15 @@ export default function CandidateDossierView({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setShowLetterModal(true)}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
+          >
+            <Award className="w-3.5 h-3.5" />
+            <span>{currentTenant?.id === 'college_polytechnic' ? 'View Appointment Order' : 'View Offer Letter'}</span>
+          </button>
+
           <button
             onClick={() => window.print()}
             className={`px-3.5 py-2 rounded-xl text-xs font-bold border flex items-center gap-1.5 transition-all cursor-pointer ${
@@ -265,6 +276,23 @@ export default function CandidateDossierView({
         </div>
 
       </div>
+
+      {/* Official Appointment / Offer Letter Modal */}
+      <OfficialLetterModal
+        isOpen={showLetterModal}
+        onClose={() => setShowLetterModal(false)}
+        isDark={isDark}
+        currentTenant={currentTenant}
+        candidate={{
+          name: 'Atharva P.',
+          rollNo: 'IT-2026-042',
+          email: 'atharva.tech@diploma.edu',
+          driveApplied: activeDrive.title || activeDrive.role,
+          atsScore,
+          technicalScore: techScore,
+          interviewScore
+        }}
+      />
 
     </div>
   );

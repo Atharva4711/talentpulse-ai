@@ -14,11 +14,21 @@ import {
   Sparkles,
   Eye,
   FileSpreadsheet,
-  ArrowRight
+  ArrowRight,
+  Plus,
+  FileText
 } from 'lucide-react';
 import { INITIAL_TPO_CANDIDATES, CORPORATE_CANDIDATES } from '../data/mockData';
+import CreateVacancyModal from './CreateVacancyModal';
+import OfficialLetterModal from './OfficialLetterModal';
 
-export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchToStudent, currentTenant }) {
+export default function TpoDashboardView({ 
+  isDark, 
+  onSelectCandidate, 
+  onSwitchToStudent, 
+  currentTenant,
+  onAddOpening 
+}) {
   const getCandidatesForTenant = () => {
     return currentTenant?.id === 'corporate_tech' ? CORPORATE_CANDIDATES : INITIAL_TPO_CANDIDATES;
   };
@@ -28,6 +38,8 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
   const [selectedDriveFilter, setSelectedDriveFilter] = useState('All');
   const [statusFilter, setStatusFilter] = useState('All');
   const [selectedCandidateModal, setSelectedCandidateModal] = useState(null);
+  const [createVacancyModalOpen, setCreateVacancyModalOpen] = useState(false);
+  const [letterModalCandidate, setLetterModalCandidate] = useState(null);
 
   useEffect(() => {
     setCandidates(currentTenant?.id === 'corporate_tech' ? CORPORATE_CANDIDATES : INITIAL_TPO_CANDIDATES);
@@ -98,7 +110,15 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <button
+            onClick={() => setCreateVacancyModalOpen(true)}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all cursor-pointer"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Post New Vacancy</span>
+          </button>
+
           <button
             onClick={handleExportCsv}
             className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 transition-all cursor-pointer"
@@ -243,21 +263,33 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
                     </span>
                   </td>
                   <td className="p-4" onClick={(e) => e.stopPropagation()}>
-                    <select
-                      value={cand.status}
-                      onChange={(e) => handleUpdateStatus(cand.id, e.target.value)}
-                      className={`px-2 py-1 rounded-lg text-[11px] font-bold border outline-none cursor-pointer ${
-                        cand.status === 'Shortlisted' 
-                          ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
-                          : cand.status === 'Waitlisted'
-                          ? 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300'
-                          : 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300'
-                      }`}
-                    >
-                      <option value="Shortlisted">Shortlisted</option>
-                      <option value="Under Review">Under Review</option>
-                      <option value="Waitlisted">Waitlisted</option>
-                    </select>
+                    <div className="flex items-center gap-1.5">
+                      <select
+                        value={cand.status}
+                        onChange={(e) => handleUpdateStatus(cand.id, e.target.value)}
+                        className={`px-2 py-1 rounded-lg text-[11px] font-bold border outline-none cursor-pointer ${
+                          cand.status === 'Shortlisted' 
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-300 dark:bg-emerald-950 dark:text-emerald-300'
+                            : cand.status === 'Waitlisted'
+                            ? 'bg-amber-50 text-amber-800 border-amber-300 dark:bg-amber-950 dark:text-amber-300'
+                            : 'bg-slate-100 text-slate-700 border-slate-300 dark:bg-slate-800 dark:text-slate-300'
+                        }`}
+                      >
+                        <option value="Shortlisted">Shortlisted</option>
+                        <option value="Under Review">Under Review</option>
+                        <option value="Waitlisted">Waitlisted</option>
+                      </select>
+
+                      {cand.status === 'Shortlisted' && (
+                        <button
+                          onClick={() => setLetterModalCandidate(cand)}
+                          title={currentTenant?.id === 'college_polytechnic' ? 'View Official Appointment Order' : 'View Corporate Offer Letter'}
+                          className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-900 transition-colors cursor-pointer"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -305,9 +337,22 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
             </div>
 
             <div className="flex justify-end gap-3 pt-2">
+              {selectedCandidateModal.status === 'Shortlisted' && (
+                <button
+                  onClick={() => {
+                    const cand = selectedCandidateModal;
+                    setSelectedCandidateModal(null);
+                    setLetterModalCandidate(cand);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold inline-flex items-center gap-1.5 cursor-pointer shadow-md transition-all hover:scale-105"
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  {currentTenant?.id === 'college_polytechnic' ? 'Official Appointment Order' : 'Corporate Offer Letter'}
+                </button>
+              )}
               <button
                 onClick={() => setSelectedCandidateModal(null)}
-                className="px-4 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold cursor-pointer"
+                className="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold cursor-pointer"
               >
                 Close Inspection
               </button>
@@ -316,6 +361,30 @@ export default function TpoDashboardView({ isDark, onSelectCandidate, onSwitchTo
         </div>
       )}
 
+      {/* Create Vacancy Modal */}
+      <CreateVacancyModal
+        isOpen={createVacancyModalOpen}
+        onClose={() => setCreateVacancyModalOpen(false)}
+        isDark={isDark}
+        currentTenant={currentTenant}
+        onSaveOpening={(newOpening) => {
+          if (onAddOpening) {
+            onAddOpening(newOpening);
+          }
+          setCreateVacancyModalOpen(false);
+        }}
+      />
+
+      {/* Official Appointment Order / Offer Letter Modal */}
+      <OfficialLetterModal
+        isOpen={Boolean(letterModalCandidate)}
+        onClose={() => setLetterModalCandidate(null)}
+        isDark={isDark}
+        candidate={letterModalCandidate}
+        currentTenant={currentTenant}
+      />
+
     </div>
   );
 }
+

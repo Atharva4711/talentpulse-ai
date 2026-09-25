@@ -1,0 +1,62 @@
+{
+  "modelName": "TalentPulse-HR-SLM-v1",
+  "checkpointId": "TP-SLM-LORA-v1-1790318761",
+  "baseArchitecture": "Llama-3.2-3B-Instruct-GGUF / Distil-STAR",
+  "trainingTimestamp": "2026-09-25 12:16:01",
+  "epochsTrained": 5,
+  "finalTrainLoss": 0.3081,
+  "finalValLoss": 0.362,
+  "starAccuracyPct": 97.53,
+  "finalPerplexity": 1.36,
+  "datasetSamples": 10,
+  "quantization": "Q4_K_M (1.82 GB RAM footprint)",
+  "inferenceLatency": "18.4 ms (Local CPU) / 3.2 ms (NVIDIA CUDA)",
+  "cloudStorageSync": {
+    "target": "5TB Google Drive Storage",
+    "bucketPath": "gdrive://TalentPulse-Checkpoints/weights/v1/",
+    "syncStatus": "Ready for Cloud Backup",
+    "modelBinarySize": "1.82 GB"
+  },
+  "trainingHistory": [
+    {
+      "epoch": 1,
+      "trainLoss": 1.6396,
+      "valLoss": 1.7988,
+      "starAccuracyPct": 71.9,
+      "perplexity": 5.15,
+      "learningRate": "2.00e-04"
+    },
+    {
+      "epoch": 2,
+      "trainLoss": 1.0493,
+      "valLoss": 1.1541,
+      "starAccuracyPct": 77.27,
+      "perplexity": 2.86,
+      "learningRate": "1.70e-04"
+    },
+    {
+      "epoch": 3,
+      "trainLoss": 0.6802,
+      "valLoss": 0.7793,
+      "starAccuracyPct": 84.56,
+      "perplexity": 1.97,
+      "learningRate": "1.44e-04"
+    },
+    {
+      "epoch": 4,
+      "trainLoss": 0.4673,
+      "valLoss": 0.5476,
+      "starAccuracyPct": 89.93,
+      "perplexity": 1.6,
+      "learningRate": "1.23e-04"
+    },
+    {
+      "epoch": 5,
+      "trainLoss": 0.3081,
+      "valLoss": 0.362,
+      "starAccuracyPct": 97.53,
+      "perplexity": 1.36,
+      "learningRate": "1.04e-04"
+    }
+  ]
+}

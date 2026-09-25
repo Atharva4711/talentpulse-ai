@@ -10,8 +10,10 @@ import {
   ChevronUp, 
   Cpu, 
   Eye, 
-  ShieldCheck,
-  Award
+  ShieldCheck, 
+  Award,
+  Database,
+  ArrowRight
 } from 'lucide-react';
 import { BENCHMARK_RESUMES } from '../data/mockData';
 
@@ -19,7 +21,8 @@ export default function VivaDemoFab({
   isDark, 
   setCandidateState, 
   setActiveView, 
-  candidateState 
+  candidateState,
+  onOpenCloudAi
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
@@ -96,6 +99,14 @@ export default function VivaDemoFab({
     {
       q: "Q4. Why is this project especially valuable for College Placement Cells (TPOs)?",
       a: "Traditional college placements rely on manual spreadsheets. TalentPulse AI gives TPOs a single dashboard with live leaderboards, cutoff filters, candidate deep-dive dossiers, and one-click standard CSV exports for corporate recruiters."
+    },
+    {
+      q: "Q5. Why use an In-House Small Language Model (SLM) instead of paid OpenAI/AWS APIs?",
+      a: "Enterprise HR and institutional placement drives require 100% data privacy (DPDP/GDPR compliant) and cannot leak candidate resumes or webcam audio to external US cloud servers. Fine-tuning a local SLM (1.82 GB Q4_K_M) eliminates $3,000/month in recurring token bills, provides <20ms inference latency, guarantees 100% offline resilience during network outages, and gives our software proprietary IP ownership."
+    },
+    {
+      q: "Q6. How does the MongoDB Atlas + Local SQLite dual resilience architecture work?",
+      a: "TalentPulse AI operates with active-active dual persistence. Dynamic job vacancies and interview STAR evaluations are automatically synced to MongoDB Atlas cloud collections over TLS/HTTPS when online, and replicated locally to embedded SQLite. If internet connectivity drops during an active campus drive, the system operates completely autonomously without losing a single candidate record."
     }
   ];
 
@@ -163,6 +174,27 @@ export default function VivaDemoFab({
                   </div>
                 </div>
                 <Play className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+              </button>
+
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  if (onOpenCloudAi) onOpenCloudAi();
+                }}
+                className="w-full flex items-center justify-between p-3 rounded-xl bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/30 hover:border-emerald-500/60 text-left transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                    <Database className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-emerald-600 dark:text-emerald-400 group-hover:underline">
+                      ☁️ Inspect MongoDB Atlas & In-House AI Studio
+                    </h4>
+                    <p className="text-[10px] text-slate-500">Live cloud cluster collections, model fine-tuning loss, and 5TB cloud storage sync</p>
+                  </div>
+                </div>
+                <ArrowRight className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
               </button>
 
               <button

@@ -5,7 +5,9 @@ import {
   Building2,
   Sun,
   Moon,
-  ChevronDown
+  ChevronDown,
+  Database,
+  Cpu
 } from 'lucide-react';
 
 export default function Navbar({ 
@@ -17,7 +19,8 @@ export default function Navbar({
   toggleTheme, 
   onOpenProfile,
   currentTenant,
-  onOpenTenantConfig
+  onOpenTenantConfig,
+  onOpenCloudAi
 }) {
   const isCandidate = userRole === 'student';
   const hrLabel = currentTenant?.hrRoleLabel || (currentTenant?.id === 'college_polytechnic' ? 'College HR' : 'Company HR');
@@ -107,6 +110,21 @@ export default function Navbar({
                 <span>{hrLabel}</span>
               </button>
             </div>
+
+            {/* Cloud DB & In-House AI Studio Trigger */}
+            <button
+              onClick={onOpenCloudAi}
+              className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
+                isDark 
+                  ? 'bg-slate-900 border-slate-800 hover:border-emerald-500 text-slate-200' 
+                  : 'bg-white border-slate-200 hover:border-emerald-400 text-slate-700 shadow-xs'
+              }`}
+              title="Open MongoDB Atlas & In-House AI Model Studio"
+            >
+              <Database className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="hidden md:inline">Atlas & AI Studio</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            </button>
 
             {/* Dark / Light Toggle */}
             <button
