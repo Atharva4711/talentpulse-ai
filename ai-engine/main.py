@@ -21,7 +21,12 @@ from database import (
     get_database_status,
     save_job_opening,
     get_job_openings,
+    delete_job_opening,
     save_interview_evaluation,
+    get_candidates,
+    save_candidate,
+    update_candidate_status,
+    get_candidate_evaluations,
     connect_mongo
 )
 from train_model import run_fine_tuning, METADATA_PATH
@@ -87,6 +92,26 @@ class MongoConfigRequest(BaseModel):
 class TrainModelRequest(BaseModel):
     epochs: Optional[int] = 5
     learningRate: Optional[float] = 2e-4
+
+class CandidateModel(BaseModel):
+    id: str
+    tenant_id: str
+    name: str
+    rollNo: str
+    email: Optional[str] = ""
+    phone: Optional[str] = ""
+    driveApplied: str
+    atsScore: int = 0
+    technicalScore: int = 0
+    interviewScore: int = 0
+    verdict: Optional[str] = "Under Review"
+    status: Optional[str] = "Applied"
+    eyeContactRatio: Optional[float] = 85.0
+    speechWpm: Optional[int] = 125
+    fillerWordsCount: Optional[int] = 0
+
+class CandidateStatusUpdate(BaseModel):
+    status: str
 
 # --- API Endpoints ---
 
@@ -272,6 +297,32 @@ def create_job_opening_endpoint(job: JobOpeningModel):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     return {"status": "success", "message": f"Opening '{job.title}' saved successfully", "id": job.id}
+
+@app.delete("/api/openings/{opening_id}")
+def delete_job_opening_endpoint(opening_id: str):
+    delete_job_opening(opening_id)
+    return {"status": "success", "message": f"Opening '{opening_id}' deleted successfully"}
+
+# 5. Candidate Management Endpoints (MongoDB Atlas + SQLite)
+@app.get("/api/candidates/{tenant_id}")
+def get_candidates_endpoint(tenant_id: str):
+    candidates = get_candidates(tenant_id)
+    return {"tenant_id": tenant_id, "candidates": candidates, "total": len(candidates)}
+
+@app.post("/api/candidates")
+def save_candidate_endpoint(cand: CandidateModel):
+    save_candidate(cand.dict())
+    return {"status": "success", "message": f"Candidate '{cand.name}' saved successfully", "id": cand.id}
+
+@app.patch("/api/candidates/{cand_id}/status")
+def update_candidate_status_endpoint(cand_id: str, update: CandidateStatusUpdate):
+    update_candidate_status(cand_id, update.status)
+    return {"status": "success", "message": f"Status updated to '{update.status}'", "id": cand_id}
+
+@app.get("/api/evaluations/{candidate_id}")
+def get_candidate_evaluations_endpoint(candidate_id: str):
+    evals = get_candidate_evaluations(candidate_id)
+    return {"candidateId": candidate_id, "evaluations": evals, "total": len(evals)}
 
 if __name__ == "__main__":
     import uvicorn

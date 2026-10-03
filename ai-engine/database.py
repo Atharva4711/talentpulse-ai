@@ -66,6 +66,26 @@ def init_sqlite():
         )
     """)
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS candidates (
+            id TEXT PRIMARY KEY,
+            tenant_id TEXT NOT NULL,
+            name TEXT NOT NULL,
+            roll_no TEXT,
+            email TEXT,
+            phone TEXT,
+            drive_applied TEXT,
+            ats_score INTEGER,
+            technical_score INTEGER,
+            interview_score INTEGER,
+            verdict TEXT,
+            status TEXT,
+            eye_contact_ratio REAL,
+            speech_wpm INTEGER,
+            filler_words_count INTEGER,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS system_config (
             key TEXT PRIMARY KEY,
             value TEXT,
@@ -303,3 +323,175 @@ def save_interview_evaluation(eval_data: Dict[str, Any]) -> bool:
             print(f"[MongoDB Eval Save Warning]: {e}")
 
     return True
+
+def delete_job_opening(opening_id: str) -> bool:
+    """Soft deletes or removes a job opening across both databases."""
+    # SQLite
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE job_openings SET is_active = 0 WHERE id = ?", (opening_id,))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[SQLite Delete Error]: {e}")
+
+    # MongoDB Atlas
+    if _is_mongo_active and _mongo_db is not None:
+        try:
+            _mongo_db.job_openings.update_one({"id": opening_id}, {"$set": {"is_active": False}})
+        except Exception as e:
+            print(f"[MongoDB Delete Error]: {e}")
+    return True
+
+def get_candidates(tenant_id: str) -> List[Dict[str, Any]]:
+    """Fetches candidates for a tenant from MongoDB Atlas or SQLite."""
+    if _is_mongo_active and _mongo_db is not None:
+        try:
+            docs = list(_mongo_db.candidates.find({"tenant_id": tenant_id}, {"_id": 0}))
+            if docs:
+                return docs
+        except Exception as e:
+            print(f"[MongoDB Candidates Read Error]: {e}")
+
+    # Fallback to SQLite
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, tenant_id, name, roll_no, email, phone, drive_applied,
+               ats_score, technical_score, interview_score, verdict, status,
+               eye_contact_ratio, speech_wpm, filler_words_count
+        FROM candidates WHERE tenant_id = ?
+    """, (tenant_id,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    candidates = []
+    for r in rows:
+        candidates.append({
+            "id": r[0],
+            "tenant_id": r[1],
+            "name": r[2],
+            "rollNo": r[3],
+            "email": r[4],
+            "phone": r[5],
+            "driveApplied": r[6],
+            "atsScore": r[7],
+            "technicalScore": r[8],
+            "interviewScore": r[9],
+            "verdict": r[10],
+            "status": r[11],
+            "eyeContactRatio": r[12],
+            "speechWpm": r[13],
+            "fillerWordsCount": r[14]
+        })
+    return candidates
+
+def save_candidate(cand: Dict[str, Any]) -> bool:
+    """Saves candidate to MongoDB Atlas and SQLite."""
+    # SQLite
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("""
+            INSERT OR REPLACE INTO candidates (
+                id, tenant_id, name, roll_no, email, phone, drive_applied,
+                ats_score, technical_score, interview_score, verdict, status,
+                eye_contact_ratio, speech_wpm, filler_words_count
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            cand["id"],
+            cand.get("tenant_id", "college_polytechnic"),
+            cand.get("name", "Applicant"),
+            cand.get("rollNo", "AP-000"),
+            cand.get("email", ""),
+            cand.get("phone", ""),
+            cand.get("driveApplied", ""),
+            cand.get("atsScore", 0),
+            cand.get("technicalScore", 0),
+            cand.get("interviewScore", 0),
+            cand.get("verdict", "Under Review"),
+            cand.get("status", "Applied"),
+            cand.get("eyeContactRatio", 85.0),
+            cand.get("speechWpm", 125),
+            cand.get("fillerWordsCount", 0)
+        ))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[SQLite Candidate Save Error]: {e}")
+
+    # MongoDB Atlas
+    if _is_mongo_active and _mongo_db is not None:
+        try:
+            _mongo_db.candidates.update_one(
+                {"id": cand["id"]},
+                {"$set": {**cand, "updatedAt": time.time()}},
+                upsert=True
+            )
+        except Exception as e:
+            print(f"[MongoDB Candidate Save Error]: {e}")
+    return True
+
+def update_candidate_status(cand_id: str, new_status: str) -> bool:
+    """Updates candidate status (Shortlisted, Interviewed, Rejected, etc.)."""
+    # SQLite
+    try:
+        conn = sqlite3.connect(SQLITE_DB_PATH)
+        cursor = conn.cursor()
+        cursor.execute("UPDATE candidates SET status = ? WHERE id = ?", (new_status, cand_id))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"[SQLite Candidate Status Update Error]: {e}")
+
+    # MongoDB Atlas
+    if _is_mongo_active and _mongo_db is not None:
+        try:
+            _mongo_db.candidates.update_one(
+                {"id": cand_id},
+                {"$set": {"status": new_status, "updatedAt": time.time()}}
+            )
+        except Exception as e:
+            print(f"[MongoDB Candidate Status Update Error]: {e}")
+    return True
+
+def get_candidate_evaluations(candidate_id: str) -> List[Dict[str, Any]]:
+    """Retrieves all interview evaluations for a candidate."""
+    if _is_mongo_active and _mongo_db is not None:
+        try:
+            docs = list(_mongo_db.interview_evaluations.find({"candidateId": candidate_id}, {"_id": 0}))
+            if docs:
+                return docs
+        except Exception as e:
+            print(f"[MongoDB Evaluations Read Error]: {e}")
+
+    # SQLite
+    conn = sqlite3.connect(SQLITE_DB_PATH)
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT id, candidate_id, role, question, candidate_answer, score,
+               verbal_quality, star_adherence, filler_count, latency_ms, hr_remark, model_name, created_at
+        FROM interview_evaluations WHERE candidate_id = ?
+    """, (candidate_id,))
+    rows = cursor.fetchall()
+    conn.close()
+
+    evals = []
+    for r in rows:
+        evals.append({
+            "id": r[0],
+            "candidateId": r[1],
+            "role": r[2],
+            "question": r[3],
+            "candidateAnswer": r[4],
+            "score": r[5],
+            "verbalQuality": r[6],
+            "starAdherenceScore": r[7],
+            "fillerCount": r[8],
+            "latencyMs": r[9],
+            "hrRemark": r[10],
+            "modelName": r[11],
+            "createdAt": r[12]
+        })
+    return evals
