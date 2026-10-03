@@ -11,7 +11,8 @@ import sqlite3
 from typing import Dict, Any, List, Optional
 from dotenv import load_dotenv
 
-load_dotenv()
+ENV_PATH = os.path.join(os.path.dirname(__file__), ".env")
+load_dotenv(ENV_PATH)
 
 # MongoDB Configuration
 MONGODB_URI = os.getenv("MONGODB_URI", "")
