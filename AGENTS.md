@@ -72,3 +72,5 @@ Split complex implementation tasks across three distinct internal roles:
 1. **Zero Repeated Questions**: The USER has globally authorized and accepted all architectural, styling, and engineering changes.
 2. **Proactive Self-Direction**: Never interrupt or block the user with `ask_question` or permission checks. Make the optimal technical and aesthetic decisions autonomously.
 3. **Continuous End-to-End Delivery**: Complete the implementation, verify builds, test the browser interface, and commit work directly without halting.
+4. **Workspace Hygiene & Zero Clutter**: Never create temporary scratch scripts, throwaway `.html` or `.py` files inside the root workspace. Keep the repository pristine, minimal, and production-only.
+5. **High-Legibility Visual Diagrams**: When generating system architecture, workflows, or technical models, always generate clean, flat 2D vector infographics with bold, legible typography and high-contrast block layouts rather than tilted monitor mockups with blurry pseudo-text.
