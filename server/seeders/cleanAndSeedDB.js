@@ -25,9 +25,7 @@ const cleanAndSeed = async () => {
     console.log('================================================================');
 
     await mongoose.connect(MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
-      tls: true,
-      tlsAllowInvalidCertificates: true
+      serverSelectionTimeoutMS: 8000
     });
 
     console.log(`✅ Connected to Database: '${mongoose.connection.name}' on Atlas Cluster0`);

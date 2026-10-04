@@ -7,14 +7,12 @@ const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
-    const mongoURI = process.env.MONGODB_URI || "mongodb+srv://AtharvaTeli:talentpulse.ai@cluster0.rek0ioo.mongodb.net/talentpulse_enterprise?retryWrites=true&w=majority&appName=Cluster0";
+    const mongoURI = process.env.MONGODB_URI || "mongodb+srv://AtharvaTeli:talentpulse.ai@cluster0.rek0ioo.mongodb.net/talentpulse_db?retryWrites=true&w=majority&appName=Cluster0";
 
     console.log('[Database] Connecting to MongoDB Atlas Cloud Cluster...');
     
     const conn = await mongoose.connect(mongoURI, {
-      serverSelectionTimeoutMS: 5000,
-      tls: true,
-      tlsAllowInvalidCertificates: true
+      serverSelectionTimeoutMS: 8000
     });
 
     console.log(`[Database] MongoDB Connected Successfully: ${conn.connection.host}`);
