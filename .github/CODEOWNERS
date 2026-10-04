@@ -1,0 +1,20 @@
+# ==============================================================================
+# TalentPulse AI — Enterprise CODEOWNERS Policy
+# Leads: Atharva Teli & Viraj
+# Any change merged into main or develop MUST be reviewed and approved by Leads.
+# ==============================================================================
+
+# Global Project Owners (All files require Atharva or Viraj approval)
+* @AtharvaTeli @Viraj
+
+# Core Database Architecture (Atharva's domain)
+/server/config/ @AtharvaTeli
+/server/models/ @AtharvaTeli
+/server/seeders/ @AtharvaTeli
+/database/ @AtharvaTeli
+
+# Backend Core & API Routing
+/server/ @AtharvaTeli @Viraj
+
+# CI/CD & GitHub Workflows
+/.github/ @AtharvaTeli @Viraj

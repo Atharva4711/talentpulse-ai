@@ -1,0 +1,23 @@
+name: Branch Protection & Review Guard
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  validate-pr:
+    name: Enforce Team Branching Policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Verify Source Branch
+        run: |
+          echo "Source branch: ${{ github.head_ref }}"
+          echo "Target branch: ${{ github.base_ref }}"
+          if [[ "${{ github.head_ref }}" == "main" ]]; then
+            echo "❌ ERROR: Merging directly from 'main' is prohibited. Work on your feature branch (vivek/workspace, shaurya/workspace)."
+            exit 1
+          fi
+          echo "✅ Branch policy verified. Awaiting review from Leads: Atharva & Viraj."
