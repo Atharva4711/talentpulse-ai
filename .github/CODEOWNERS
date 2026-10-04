@@ -1,20 +1,20 @@
 # ==============================================================================
-# TalentPulse AI — Enterprise CODEOWNERS Policy
-# Leads: Atharva Teli & Viraj
-# Any change merged into main or develop MUST be reviewed and approved by Leads.
+# TalentPulse AI — Enterprise Team Ownership Policy
+# Project Leads & Backend Architects: Atharva Teli & Viraj
+# Frontend Developers: Vivek & Shaurya
 # ==============================================================================
 
-# Global Project Owners (All files require Atharva or Viraj approval)
+# Global Project Leads (Full authority across all branches)
 * @AtharvaTeli @Viraj
 
-# Core Database Architecture (Atharva's domain)
-/server/config/ @AtharvaTeli
-/server/models/ @AtharvaTeli
-/server/seeders/ @AtharvaTeli
-/database/ @AtharvaTeli
-
-# Backend Core & API Routing
+# Backend & Database Architecture (Atharva Teli & Viraj)
 /server/ @AtharvaTeli @Viraj
+/database/ @AtharvaTeli @Viraj
 
-# CI/CD & GitHub Workflows
+# Frontend UI & Client Components (Vivek & Shaurya, reviewed by Leads)
+/src/ @Vivek @Shaurya
+/public/ @Vivek @Shaurya
+
+# CI/CD Workflows & Core Git Policies (Atharva Teli & Viraj)
 /.github/ @AtharvaTeli @Viraj
+

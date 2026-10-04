@@ -1,0 +1,29 @@
+#!/bin/sh
+# Pre-push hook: Allows Leads (Atharva & Viraj) to push directly, prevents others.
+protected_branch='main'
+current_branch=$(git symbolic-ref HEAD | sed -e 's,.*/\(.*\),\1,')
+current_author=$(git config user.name)
+
+# If trying to push to main, verify if author is a Project Lead
+if [ "$current_branch" = "$protected_branch" ]; then
+    # Leads (Atharva and Viraj) have full bypass rights
+    case "$current_author" in
+        *Atharva*|*atharva*|*Viraj*|*viraj*)
+            echo "👑 Lead push authorized for $current_author on branch '$protected_branch'."
+            exit 0
+            ;;
+        *)
+            echo "=========================================================================="
+            echo "❌ [BLOCKED] Direct push to '$protected_branch' is restricted to Project Leads!"
+            echo "👑 Leads: Atharva Teli & Viraj"
+            echo "👉 Frontend Team (Vivek & Shaurya): Please push to your workspace branch:"
+            echo "   git push origin <your-name>/frontend"
+            echo "   Then create a Pull Request on GitHub for Lead review & approval."
+            echo "=========================================================================="
+            exit 1
+            ;;
+    esac
+fi
+
+exit 0
+
