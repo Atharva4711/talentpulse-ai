@@ -36,3 +36,21 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# AI Agent & Workflow Frameworks (GSD, Cline, Roo)
+.agent/
+.agents/
+.gsd/
+.gemini/
+.clinerules
+.roomodes
+.coderabbit.yaml
+GSD-STYLE.md
+PROJECT_RULES.md
+model_capabilities.yaml
+VERSION
+adapters/
+scripts/
+
+# PDF Exports
+TalentPulse_AI_IRJET_Survey_Paper.pdf
