@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 // Lightweight SVG Icons
 const Icons = {
@@ -98,6 +98,24 @@ const Icons = {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="14" height="14">
       <polyline points="6 9 12 15 18 9" />
     </svg>
+  ),
+  Sun: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <circle cx="12" cy="12" r="5" />
+      <line x1="12" y1="1" x2="12" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="23" />
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
+      <line x1="1" y1="12" x2="3" y2="12" />
+      <line x1="21" y1="12" x2="23" y2="12" />
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
+    </svg>
+  ),
+  Moon: () => (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+    </svg>
   )
 }
 
@@ -158,10 +176,19 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRange, setSelectedRange] = useState('Oct 1, 2026 - Oct 31, 2026')
   const [alertMsg, setAlertMsg] = useState('')
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('tp_theme') || 'light'
+  })
 
-  const triggerAction = (msg) => {
-    setAlertMsg(msg)
-    setTimeout(() => setAlertMsg(''), 3000)
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('tp_theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : 'light'
+    setTheme(nextTheme)
+    triggerAction(`Switched to ${nextTheme === 'dark' ? 'Dark 🌙' : 'Light ☀️'} mode`)
   }
 
   // 1. HR Manager Navigation & Data
@@ -330,6 +357,16 @@ export default function App() {
                 🏛️ Institution
               </button>
             </div>
+
+            {/* Dark/Light Mode Switcher Button */}
+            <button
+              className="theme-toggle-btn"
+              onClick={toggleTheme}
+              title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              {theme === 'dark' ? <Icons.Sun /> : <Icons.Moon />}
+              <span className="theme-mode-label">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            </button>
 
             {/* Notification Bell */}
             <button className="icon-btn" onClick={() => triggerAction('Opening 3 unread notifications')}>
@@ -592,10 +629,10 @@ export default function App() {
                                   <div className="avatar-circle" style={{ background: `${app.color}15`, color: app.color, width: 30, height: 30, fontSize: 11 }}>
                                     {app.initial}
                                   </div>
-                                  <span style={{ fontWeight: 700, color: '#1e1b4b' }}>{app.name}</span>
+                                  <span style={{ fontWeight: 700, color: 'var(--text-main)' }}>{app.name}</span>
                                 </div>
                               </td>
-                              <td style={{ color: '#475569', fontWeight: 600 }}>{app.pos}</td>
+                              <td style={{ color: 'var(--text-body)', fontWeight: 600 }}>{app.pos}</td>
                               <td>
                                 <span className="match-score-badge">{app.score}</span>
                               </td>
@@ -604,7 +641,7 @@ export default function App() {
                                   {app.status}
                                 </span>
                               </td>
-                              <td style={{ color: '#64748b', fontSize: 12 }}>{app.date}</td>
+                              <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{app.date}</td>
                             </tr>
                           ))}
                       </tbody>
@@ -792,14 +829,14 @@ export default function App() {
                       <tbody>
                         {candidateApplications.map((item, idx) => (
                           <tr key={idx}>
-                            <td style={{ fontWeight: 700, color: '#1e1b4b' }}>{item.title}</td>
-                            <td style={{ color: '#475569', fontWeight: 600 }}>{item.company}</td>
+                            <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{item.title}</td>
+                            <td style={{ color: 'var(--text-body)', fontWeight: 600 }}>{item.company}</td>
                             <td>
                               <span className={`status-badge ${item.status.toLowerCase()}`}>
                                 {item.status}
                               </span>
                             </td>
-                            <td style={{ color: '#64748b', fontSize: 12 }}>{item.date}</td>
+                            <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{item.date}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -822,12 +859,12 @@ export default function App() {
                         <Icons.FileText />
                       </div>
                       <div>
-                        <div style={{ fontSize: 14, fontWeight: 700, color: '#1e1b4b' }}>Data Analyst</div>
-                        <div style={{ fontSize: 12, color: '#64748b' }}>XYZ Solutions</div>
+                        <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>Data Analyst</div>
+                        <div style={{ fontSize: 12, color: 'var(--text-muted)' }}>XYZ Solutions</div>
                       </div>
                     </div>
-                    <div style={{ fontSize: 12.5, color: '#475569', fontWeight: 600 }}>
-                      📅 Today, 11:30 AM <span style={{ color: '#94a3b8' }}>|</span> Online Interview
+                    <div style={{ fontSize: 12.5, color: 'var(--text-body)', fontWeight: 600 }}>
+                      📅 Today, 11:30 AM <span style={{ color: 'var(--text-light)' }}>|</span> Online Interview
                     </div>
                     <button className="btn-join" onClick={() => triggerAction('Launching In-Browser WASM Proctored Interview Room')}>
                       Join
@@ -843,8 +880,8 @@ export default function App() {
 
                   <div className="recommended-job-card">
                     <div>
-                      <div style={{ fontSize: 14, fontWeight: 700, color: '#1e1b4b' }}>Frontend Developer</div>
-                      <div style={{ fontSize: 12, color: '#64748b', marginBottom: 6 }}>TechCorp — Pune, Maharashtra</div>
+                      <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-main)' }}>Frontend Developer</div>
+                      <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 6 }}>TechCorp — Pune, Maharashtra</div>
                       <div>
                         <span className="skill-tag">React</span>
                         <span className="skill-tag">JavaScript</span>
@@ -1016,14 +1053,14 @@ export default function App() {
                       <tbody>
                         {institutionJobs.map((item, idx) => (
                           <tr key={idx}>
-                            <td style={{ fontWeight: 700, color: '#1e1b4b' }}>{item.title}</td>
-                            <td style={{ color: '#475569', fontWeight: 600 }}>{item.applicants}</td>
+                            <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{item.title}</td>
+                            <td style={{ color: 'var(--text-body)', fontWeight: 600 }}>{item.applicants}</td>
                             <td>
                               <span className={`status-badge ${item.status.toLowerCase()}`}>
                                 {item.status}
                               </span>
                             </td>
-                            <td style={{ color: '#64748b', fontSize: 12 }}>{item.date}</td>
+                            <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{item.date}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1050,12 +1087,12 @@ export default function App() {
                       <tbody>
                         {institutionApplicants.map((item, idx) => (
                           <tr key={idx}>
-                            <td style={{ fontWeight: 700, color: '#1e1b4b' }}>{item.name}</td>
-                            <td style={{ color: '#475569', fontWeight: 600 }}>{item.job}</td>
+                            <td style={{ fontWeight: 700, color: 'var(--text-main)' }}>{item.name}</td>
+                            <td style={{ color: 'var(--text-body)', fontWeight: 600 }}>{item.job}</td>
                             <td>
                               <span className="match-score-badge">{item.match}</span>
                             </td>
-                            <td style={{ color: '#64748b', fontSize: 12 }}>{item.date}</td>
+                            <td style={{ color: 'var(--text-muted)', fontSize: 12 }}>{item.date}</td>
                           </tr>
                         ))}
                       </tbody>

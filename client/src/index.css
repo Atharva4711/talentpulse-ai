@@ -51,6 +51,51 @@
   --shadow-hover: 0 10px 25px -4px rgba(99, 102, 241, 0.1);
 }
 
+/* Dark Mode Tokens */
+[data-theme='dark'] {
+  --bg-app: #0b0f19;
+  --bg-surface: #111827;
+  --bg-sidebar: #0f172a;
+  
+  --primary: #818cf8;
+  --primary-hover: #6366f1;
+  --primary-light: rgba(99, 102, 241, 0.18);
+  --primary-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  --cyan-accent: #22d3ee;
+  
+  --text-main: #f8fafc;
+  --text-body: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-light: #64748b;
+  
+  --border-light: #1e293b;
+  --border-subtle: #334155;
+  
+  --green: #34d399;
+  --green-bg: rgba(16, 185, 129, 0.16);
+  --green-text: #34d399;
+  
+  --blue: #60a5fa;
+  --blue-bg: rgba(59, 130, 246, 0.16);
+  --blue-text: #60a5fa;
+  
+  --purple: #a78bfa;
+  --purple-bg: rgba(139, 92, 246, 0.16);
+  --purple-text: #c4b5fd;
+  
+  --pink: #f472b6;
+  --pink-bg: rgba(236, 72, 153, 0.16);
+  --pink-text: #f472b6;
+  
+  --amber: #fbbf24;
+  --amber-bg: rgba(245, 158, 11, 0.16);
+  --amber-text: #fbbf24;
+  
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.6);
+  --shadow-hover: 0 10px 25px -4px rgba(99, 102, 241, 0.25);
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -940,5 +985,189 @@ body {
   .kpi-grid {
     grid-template-columns: 1fr;
   }
+}
+
+/* ========================================================
+   THEME TOGGLE BUTTON & DARK MODE ENHANCEMENTS
+   ======================================================== */
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  color: var(--text-body);
+  padding: 7px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+}
+
+.theme-toggle-btn:hover {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+}
+
+.theme-toggle-btn svg {
+  width: 17px;
+  height: 17px;
+  stroke-width: 2.2;
+  transition: transform 0.4s ease;
+}
+
+.theme-toggle-btn:hover svg {
+  transform: rotate(20deg);
+}
+
+.theme-mode-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Dark Mode Overrides for Elevated Components */
+[data-theme='dark'] .brand-text {
+  color: #f8fafc;
+}
+
+[data-theme='dark'] .search-box {
+  background: #131b2e;
+  border-color: #1e293b;
+}
+
+[data-theme='dark'] .search-box:focus-within {
+  background: #0f172a;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.2);
+}
+
+[data-theme='dark'] .role-switcher-pill {
+  background: #131b2e;
+  border: 1px solid #1e293b;
+}
+
+[data-theme='dark'] .role-tab-btn {
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .role-tab-btn:hover {
+  color: #f8fafc;
+}
+
+[data-theme='dark'] .role-tab-btn.active {
+  background: #1e293b;
+  color: #818cf8;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme='dark'] .icon-btn {
+  background: #131b2e;
+  border-color: #1e293b;
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .icon-btn:hover {
+  background: #1e293b;
+  color: #818cf8;
+  border-color: #334155;
+}
+
+[data-theme='dark'] .theme-toggle-btn {
+  background: #131b2e;
+  border-color: #1e293b;
+  color: #fbbf24;
+}
+
+[data-theme='dark'] .theme-toggle-btn:hover {
+  background: #1e293b;
+  color: #fef08a;
+  border-color: #fbbf24;
+  box-shadow: 0 4px 14px rgba(251, 191, 36, 0.15);
+}
+
+[data-theme='dark'] .date-picker-dropdown {
+  background: #111827;
+  border-color: #1e293b;
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .date-picker-dropdown:hover {
+  border-color: #334155;
+  background: #1e293b;
+}
+
+[data-theme='dark'] .select-filter-sm {
+  background: #131b2e;
+  border-color: #1e293b;
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .custom-table th {
+  border-bottom: 1px solid #1e293b;
+  color: #64748b;
+}
+
+[data-theme='dark'] .custom-table td {
+  border-bottom: 1px solid #1e293b;
+  color: var(--text-body);
+}
+
+[data-theme='dark'] .custom-table tr:hover td {
+  background: rgba(129, 140, 248, 0.08);
+}
+
+[data-theme='dark'] .interview-item-row {
+  border-bottom: 1px solid #1e293b;
+}
+
+[data-theme='dark'] .barchart-bars-wrap {
+  border-bottom: 1px solid #1e293b;
+}
+
+[data-theme='dark'] .upcoming-join-card,
+[data-theme='dark'] .recommended-job-card {
+  background: #131b2e;
+  border-color: #1e293b;
+}
+
+[data-theme='dark'] .upcoming-join-card:hover,
+[data-theme='dark'] .recommended-job-card:hover {
+  border-color: #334155;
+}
+
+[data-theme='dark'] .skill-tag {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .nav-item:hover {
+  background: #1e293b;
+  color: var(--primary);
+}
+
+[data-theme='dark'] .nav-item.active {
+  background: rgba(99, 102, 241, 0.18);
+  color: #818cf8;
+}
+
+[data-theme='dark'] .status-badge.new {
+  background: #1e293b;
+  color: #94a3b8;
+}
+
+[data-theme='dark'] .user-profile-badge:hover {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+[data-theme='dark'] .badge-dot {
+  border-color: #0f172a;
 }
 
